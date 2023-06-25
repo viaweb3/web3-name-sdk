@@ -1,26 +1,38 @@
-import { providers } from "ethers";
+import { ConstructorFragment, namehash } from 'ethers/lib/utils'
+import { getChainId, getResolverContract, getSIDContract } from './utils'
+import { availableChains } from './constants/chains'
+import { ethers } from 'ethers'
 
 export class SID {
-  constructor() {
-    console.log("Config constructor");
-  }
+  async getDomainName(address: string, chainId?: number) {
+    const reverseNode = `${address.slice(2)}.addr.reverse`
+    const reverseNamehash = namehash(reverseNode)
+    try {
+      const chains = chainId ? [chainId] : availableChains
+      for (const _id of chains) {
+        const sidContract = getSIDContract(_id)
+        const resolverAddr = await sidContract.resolver(reverseNamehash)
+        if (parseInt(resolverAddr, 16) === 0) {
+          continue
+        }
+        const resolverContract = getResolverContract({
+          resolverAddr,
+          chainId: _id,
+        })
+        const name = await resolverContract.name(reverseNamehash)
+        if (name) {
+          return name
+        }
+      }
 
-  getContractAddr(chainId: string) {
-    const id = parseInt(chainId);
-    if ([97].includes(id)) {
-      return "0xfFB52185b56603e0fd71De9de4F6f902f05EEA23";
-    } else if ([1, 3, 4, 5].includes(id)) {
-      return "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
-    } else if ([56].includes(id)) {
-      return "0x08CEd32a7f3eeC915Ba84415e9C07a7286977956";
-    } else if ([421613].includes(id)) {
-      return "0x1f70fc8de5669eaa8C9ce72257c94500DC5ff2E4";
-    } else if ([42161].includes(id)) {
-      return "0x4a067EE58e73ac5E4a43722E008DFdf65B2bF348";
+      return null
+    } catch (e) {
+      console.log(`Error getting name for reverse record of ${address}`, e)
+      return null
     }
   }
 }
 
-export function createSID({ provider }: { provider: providers.Provider }) {
-  return new SID();
+export function createSID() {
+  return new SID()
 }
