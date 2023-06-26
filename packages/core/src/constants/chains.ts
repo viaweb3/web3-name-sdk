@@ -1,5 +1,3 @@
-import { ChainId } from '../types/chains'
-
 export const availableChains: ChainId[] = [1, 56, 42161]
 
 export const rpcUrls: {

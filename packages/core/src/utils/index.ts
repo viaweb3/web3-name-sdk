@@ -1,7 +1,6 @@
 import { ethers, providers } from 'ethers'
 import { abi as resolverAbi } from '../abi/Resolver.json'
 import { abi as sidAbi } from '../abi/SID.json'
-import { ChainId } from '../types/chains'
 
 export function getSIDContract(chainId: ChainId, provider: providers.Provider): ethers.Contract {
   return new ethers.Contract(getContractAddr(chainId), sidAbi, provider)

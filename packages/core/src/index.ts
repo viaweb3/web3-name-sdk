@@ -1,17 +1,25 @@
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 import { namehash } from 'ethers/lib/utils'
 import { availableChains, rpcUrls } from './constants/chains'
-import { ChainId } from './types/chains'
+import { TLD } from './constants/tld'
 import { getResolverContract, getSIDContract } from './utils'
 
 export class SID {
-  async getDomainName(address: string, chainId?: ChainId) {
+  /**
+   * Get domain name for address
+   *
+   * @param {string} address
+   * @param {ChainId} [chainId]
+   * @return {(Promise<string | null>)} domain name
+   * @memberof SID
+   */
+  async getDomainName(address: string, chainId?: ChainId): Promise<string | null> {
     const reverseNode = `${address.slice(2)}.addr.reverse`
     const reverseNamehash = namehash(reverseNode)
     try {
       const chains = chainId ? [chainId] : availableChains
       for (const _id of chains) {
-        const provider = new ethers.providers.JsonRpcProvider(rpcUrls[_id], _id)
+        const provider = new providers.JsonRpcProvider(rpcUrls[_id], _id)
         const sidContract = getSIDContract(_id, provider)
         const resolverAddr = await sidContract.resolver(reverseNamehash)
         if (parseInt(resolverAddr, 16) === 0) {
@@ -31,6 +39,62 @@ export class SID {
     } catch (e) {
       console.log(`Error getting name for reverse record of ${address}`, e)
       return null
+    }
+  }
+
+  async getAddress(domain: string) {
+    const tld = domain.split('.').pop()
+    if (!tld) {
+      return null
+    }
+
+    if (tld === TLD.ENS) {
+      return await providers.getDefaultProvider().resolveName(domain)
+    }
+
+    if (tld === TLD.ARB) {
+      const provider = new providers.JsonRpcProvider(rpcUrls[42161], 42161)
+      const resolver = await this.getResolver(domain, 42161, provider)
+      const res = await resolver?.getAddress()
+      return res ?? null
+    }
+
+    const provider = new providers.JsonRpcProvider(rpcUrls[56], 56)
+    const resolver = await this.getResolver(domain, 56, provider)
+    const res = await resolver?.getAddress()
+    return res ?? null
+  }
+
+  async getResolver(domain: string, chainId: ChainId, provider: providers.Provider) {
+    let currentName = domain
+    let currentNamehash = namehash(currentName)
+    while (true) {
+      if (currentName === '' || currentName === '.') {
+        return null
+      }
+      if (!currentName.includes('.')) {
+        return null
+      }
+      const sidContract = getSIDContract(chainId, provider)
+      const resolverAddr = await sidContract.resolver(currentNamehash)
+      if (resolverAddr !== null) {
+        const resolverContract = getResolverContract({
+          resolverAddr,
+          provider,
+        })
+        if (currentName !== domain && !(await resolverContract.supportsInterface('0x9061b923'))) {
+          return null
+        }
+
+        const resolver = new providers.Resolver(
+          provider as providers.BaseProvider,
+          resolverAddr,
+          domain
+        )
+        return resolver
+      }
+      currentName = currentName.split('.').slice(1).join('.')
+      currentNamehash = namehash(currentName)
     }
   }
 }
