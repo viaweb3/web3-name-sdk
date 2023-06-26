@@ -7,4 +7,10 @@ describe('SID Name resolving', () => {
     const domainName = await sid.getDomainName('0xb5932a6b7d50a966aec6c74c97385412fb497540')
     expect(domainName).to.be.eq('spaceid.eth')
   }).timeout(10000)
+
+  it('it should properly resolve address based on chain ID', async () => {
+    const sid = createSID()
+    const domainName = await sid.getDomainName('0xb5932a6b7d50a966aec6c74c97385412fb497540', 56)
+    expect(domainName).to.be.eq('spaceid.bnb')
+  }).timeout(10000)
 })

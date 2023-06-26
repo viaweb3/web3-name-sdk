@@ -1,20 +1,19 @@
-import { ethers } from 'ethers'
-import { abi as sidAbi } from '../abi/SID.json'
+import { ethers, providers } from 'ethers'
 import { abi as resolverAbi } from '../abi/Resolver.json'
+import { abi as sidAbi } from '../abi/SID.json'
+import { ChainId } from '../types/chains'
 
-export function getSIDContract(chainId: number): ethers.Contract {
-  const provider = ethers.providers.getDefaultProvider(chainId)
+export function getSIDContract(chainId: ChainId, provider: providers.Provider): ethers.Contract {
   return new ethers.Contract(getContractAddr(chainId), sidAbi, provider)
 }
 
 export function getResolverContract({
   resolverAddr,
-  chainId,
+  provider,
 }: {
   resolverAddr: string
-  chainId: number
+  provider: providers.Provider
 }) {
-  const provider = ethers.providers.getDefaultProvider(chainId)
   return new ethers.Contract(resolverAddr, resolverAbi, provider)
 }
 
