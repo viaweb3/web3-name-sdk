@@ -3,6 +3,7 @@ import { namehash } from 'ethers/lib/utils'
 import { availableChains, rpcUrls } from './constants/chains'
 import { TLD } from './constants/tld'
 import { getResolverContract, getSIDContract } from './utils'
+import { LensProtocol } from './lens'
 
 export class SID {
   /**
@@ -35,6 +36,11 @@ export class SID {
         }
       }
 
+      const lensName = await LensProtocol.getDomainName(address)
+      if (lensName) {
+        return lensName
+      }
+
       return null
     } catch (e) {
       console.log(`Error getting name for reverse record of ${address}`, e)
@@ -43,26 +49,35 @@ export class SID {
   }
 
   async getAddress(domain: string) {
-    const tld = domain.split('.').pop()
-    if (!tld) {
-      return null
-    }
+    try {
+      const tld = domain.split('.').pop()
+      if (!tld) {
+        return null
+      }
 
-    if (tld === TLD.ENS) {
-      return await providers.getDefaultProvider().resolveName(domain)
-    }
+      if (tld === TLD.ENS) {
+        return await providers.getDefaultProvider().resolveName(domain)
+      }
 
-    if (tld === TLD.ARB) {
-      const provider = new providers.JsonRpcProvider(rpcUrls[42161], 42161)
-      const resolver = await this.getResolver(domain, 42161, provider)
+      if (tld === TLD.ARB) {
+        const provider = new providers.JsonRpcProvider(rpcUrls[42161], 42161)
+        const resolver = await this.getResolver(domain, 42161, provider)
+        const res = await resolver?.getAddress()
+        return res ?? null
+      }
+
+      if (tld === TLD.LENS) {
+        return await LensProtocol.getAddress(domain)
+      }
+
+      const provider = new providers.JsonRpcProvider(rpcUrls[56], 56)
+      const resolver = await this.getResolver(domain, 56, provider)
       const res = await resolver?.getAddress()
       return res ?? null
+    } catch (error) {
+      console.error(`Error getting address for ${domain}`, error)
+      return null
     }
-
-    const provider = new providers.JsonRpcProvider(rpcUrls[56], 56)
-    const resolver = await this.getResolver(domain, 56, provider)
-    const res = await resolver?.getAddress()
-    return res ?? null
   }
 
   async getResolver(domain: string, chainId: ChainId, provider: providers.Provider) {
