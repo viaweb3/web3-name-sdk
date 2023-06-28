@@ -1,7 +1,7 @@
-export const availableChains: ChainId[] = [1, 56, 42161]
+export const availableChains: number[] = [1, 56, 42161]
 
 export const rpcUrls: {
-  [key in ChainId]: string
+  [key: number]: string
 } = {
   1: 'https://cloudflare-eth.com',
   56: 'https://bsc-dataseed.binance.org/',

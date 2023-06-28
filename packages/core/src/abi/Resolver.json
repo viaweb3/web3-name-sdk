@@ -685,30 +685,20 @@
   "ast": {
     "absolutePath": "project:/contracts/Resolver.sol",
     "exportedSymbols": {
-      "Resolver": [
-        3517
-      ]
+      "Resolver": [3517]
     },
     "id": 3518,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 3268,
-        "literals": [
-          "solidity",
-          ">=",
-          "0.4",
-          ".25"
-        ],
+        "literals": ["solidity", ">=", "0.4", ".25"],
         "nodeType": "PragmaDirective",
         "src": "0:25:11"
       },
       {
         "id": 3269,
-        "literals": [
-          "experimental",
-          "ABIEncoderV2"
-        ],
+        "literals": ["experimental", "ABIEncoderV2"],
         "nodeType": "PragmaDirective",
         "src": "26:33:11"
       },
@@ -725,9 +715,7 @@
         },
         "fullyImplemented": false,
         "id": 3517,
-        "linearizedBaseContracts": [
-          3517
-        ],
+        "linearizedBaseContracts": [3517],
         "name": "Resolver",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -3585,20 +3573,13 @@
     "attributes": {
       "absolutePath": "project:/contracts/Resolver.sol",
       "exportedSymbols": {
-        "Resolver": [
-          3517
-        ]
+        "Resolver": [3517]
       }
     },
     "children": [
       {
         "attributes": {
-          "literals": [
-            "solidity",
-            ">=",
-            "0.4",
-            ".25"
-          ]
+          "literals": ["solidity", ">=", "0.4", ".25"]
         },
         "id": 3268,
         "name": "PragmaDirective",
@@ -3606,10 +3587,7 @@
       },
       {
         "attributes": {
-          "literals": [
-            "experimental",
-            "ABIEncoderV2"
-          ]
+          "literals": ["experimental", "ABIEncoderV2"]
         },
         "id": 3269,
         "name": "PragmaDirective",
@@ -3618,17 +3596,11 @@
       {
         "attributes": {
           "abstract": false,
-          "baseContracts": [
-            null
-          ],
-          "contractDependencies": [
-            null
-          ],
+          "baseContracts": [null],
+          "contractDependencies": [null],
           "contractKind": "interface",
           "fullyImplemented": false,
-          "linearizedBaseContracts": [
-            3517
-          ],
+          "linearizedBaseContracts": [3517],
           "name": "Resolver",
           "scope": 3518
         },
@@ -4305,9 +4277,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "ABI",
               "scope": 3517,
               "stateMutability": "view",
@@ -4444,9 +4414,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "addr",
               "scope": 3517,
               "stateMutability": "view",
@@ -4532,9 +4500,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "addr",
               "scope": 3517,
               "stateMutability": "view",
@@ -4645,9 +4611,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "contenthash",
               "scope": 3517,
               "stateMutability": "view",
@@ -4732,9 +4696,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "dnsrr",
               "scope": 3517,
               "stateMutability": "view",
@@ -4819,9 +4781,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "name",
               "scope": 3517,
               "stateMutability": "view",
@@ -4906,9 +4866,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "pubkey",
               "scope": 3517,
               "stateMutability": "view",
@@ -5019,9 +4977,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "text",
               "scope": 3517,
               "stateMutability": "view",
@@ -5132,9 +5088,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "interfaceImplementer",
               "scope": 3517,
               "stateMutability": "view",
@@ -5246,9 +5200,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setABI",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -5343,9 +5295,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3407,
@@ -5363,9 +5313,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setAddr",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -5435,9 +5383,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3414,
@@ -5455,9 +5401,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setAddr",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -5552,9 +5496,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3423,
@@ -5572,9 +5514,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setContenthash",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -5643,9 +5583,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3430,
@@ -5663,9 +5601,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setDnsrr",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -5734,9 +5670,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3437,
@@ -5754,9 +5688,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setName",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -5825,9 +5757,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3444,
@@ -5845,9 +5775,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setPubkey",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -5942,9 +5870,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3453,
@@ -5962,9 +5888,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setText",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -6059,9 +5983,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3462,
@@ -6079,9 +6001,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setInterface",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -6177,9 +6097,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3471,
@@ -6197,9 +6115,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "supportsInterface",
               "scope": 3517,
               "stateMutability": "pure",
@@ -6284,9 +6200,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "multicall",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -6391,9 +6305,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "content",
               "scope": 3517,
               "stateMutability": "view",
@@ -6478,9 +6390,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "multihash",
               "scope": 3517,
               "stateMutability": "view",
@@ -6565,9 +6475,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setContent",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -6636,9 +6544,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3508,
@@ -6656,9 +6562,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setMultihash",
               "scope": 3517,
               "stateMutability": "nonpayable",
@@ -6727,9 +6631,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 3515,

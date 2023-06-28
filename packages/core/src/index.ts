@@ -15,7 +15,7 @@ export class SID {
    * @return {(Promise<string | null>)} domain name
    * @memberof SID
    */
-  async getDomainName(address: string, chainId?: ChainId): Promise<string | null> {
+  async getDomainName(address: string, chainId?: number): Promise<string | null> {
     const reverseNode = `${address.slice(2)}.addr.reverse`
     const reverseNamehash = namehash(reverseNode)
     try {
@@ -84,7 +84,7 @@ export class SID {
     }
   }
 
-  async getResolver(domain: string, chainId: ChainId, provider: providers.Provider) {
+  async getResolver(domain: string, chainId: number, provider: providers.Provider) {
     let currentName = domain
     let currentNamehash = namehash(currentName)
     while (true) {

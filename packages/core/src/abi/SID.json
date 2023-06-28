@@ -384,21 +384,14 @@
   "ast": {
     "absolutePath": "project:/contracts/SID.sol",
     "exportedSymbols": {
-      "SID": [
-        136
-      ]
+      "SID": [136]
     },
     "id": 137,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 1,
-        "literals": [
-          "solidity",
-          ">=",
-          "0.7",
-          ".4"
-        ],
+        "literals": ["solidity", ">=", "0.7", ".4"],
         "nodeType": "PragmaDirective",
         "src": "0:24:0"
       },
@@ -409,9 +402,7 @@
         "contractKind": "interface",
         "fullyImplemented": false,
         "id": 136,
-        "linearizedBaseContracts": [
-          136
-        ],
+        "linearizedBaseContracts": [136],
         "name": "SID",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -1999,20 +1990,13 @@
     "attributes": {
       "absolutePath": "project:/contracts/SID.sol",
       "exportedSymbols": {
-        "SID": [
-          136
-        ]
+        "SID": [136]
       }
     },
     "children": [
       {
         "attributes": {
-          "literals": [
-            "solidity",
-            ">=",
-            "0.7",
-            ".4"
-          ]
+          "literals": ["solidity", ">=", "0.7", ".4"]
         },
         "id": 1,
         "name": "PragmaDirective",
@@ -2021,17 +2005,11 @@
       {
         "attributes": {
           "abstract": false,
-          "baseContracts": [
-            null
-          ],
-          "contractDependencies": [
-            null
-          ],
+          "baseContracts": [null],
+          "contractDependencies": [null],
           "contractKind": "interface",
           "fullyImplemented": false,
-          "linearizedBaseContracts": [
-            136
-          ],
+          "linearizedBaseContracts": [136],
           "name": "SID",
           "scope": 137
         },
@@ -2461,9 +2439,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setRecord",
               "scope": 136,
               "stateMutability": "nonpayable",
@@ -2586,9 +2562,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 45,
@@ -2606,9 +2580,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setSubnodeRecord",
               "scope": 136,
               "stateMutability": "nonpayable",
@@ -2757,9 +2729,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 58,
@@ -2777,9 +2747,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setSubnodeOwner",
               "scope": 136,
               "stateMutability": "nonpayable",
@@ -2917,9 +2885,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setResolver",
               "scope": 136,
               "stateMutability": "nonpayable",
@@ -2989,9 +2955,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 76,
@@ -3009,9 +2973,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setOwner",
               "scope": 136,
               "stateMutability": "nonpayable",
@@ -3081,9 +3043,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 83,
@@ -3101,9 +3061,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setTTL",
               "scope": 136,
               "stateMutability": "nonpayable",
@@ -3172,9 +3130,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 90,
@@ -3192,9 +3148,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "setApprovalForAll",
               "scope": 136,
               "stateMutability": "nonpayable",
@@ -3264,9 +3218,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 97,
@@ -3284,9 +3236,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "owner",
               "scope": 136,
               "stateMutability": "view",
@@ -3372,9 +3322,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "resolver",
               "scope": 136,
               "stateMutability": "view",
@@ -3460,9 +3408,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "ttl",
               "scope": 136,
               "stateMutability": "view",
@@ -3547,9 +3493,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "recordExists",
               "scope": 136,
               "stateMutability": "view",
@@ -3634,9 +3578,7 @@
               "implemented": false,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "isApprovedForAll",
               "scope": 136,
               "stateMutability": "view",
