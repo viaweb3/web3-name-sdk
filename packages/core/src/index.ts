@@ -4,6 +4,7 @@ import { availableChains, rpcUrls } from './constants/chains'
 import { TLD } from './constants/tld'
 import { getResolverContract, getSIDContract } from './utils'
 import { LensProtocol } from './lens'
+import { validateName } from './utils/validate'
 
 export class SID {
   /**
@@ -49,12 +50,15 @@ export class SID {
   }
 
   async getAddress(domain: string) {
-    try {
-      const tld = domain.split('.').pop()
-      if (!tld) {
-        return null
-      }
+    const tld = domain.split('.').pop()
+    if (!tld) {
+      return null
+    }
 
+    if (tld !== TLD.ENS && tld !== TLD.LENS) {
+      validateName(domain)
+    }
+    try {
       if (tld === TLD.ENS) {
         return await providers.getDefaultProvider().resolveName(domain)
       }

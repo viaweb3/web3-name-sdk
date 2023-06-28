@@ -1,5 +1,8 @@
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 import { createSID } from '../src'
+
+chai.use(chaiAsPromised)
 
 describe('SID Name resolving', () => {
   it('it should properly resolve address', async () => {
@@ -37,4 +40,9 @@ describe('SID Name resolving', () => {
     const address = await sid.getAddress('bts_official.lens')
     expect(address?.toLowerCase()).to.be.eq('0xd80efa68b50d21e548b9cdb092ebc6e5bca113e7')
   }).timeout(10000)
+
+  it('it should throw error with invalid .bnb domain name', async () => {
+    const sid = createSID()
+    expect(sid.getAddress('xz.bnb')).to.rejectedWith(Error)
+  })
 })
