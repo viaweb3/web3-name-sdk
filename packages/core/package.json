@@ -23,6 +23,7 @@
     "@adraffy/ens-normalize": "^1.9.2",
     "@ensdomains/ens-validation": "^0.1.0",
     "ethers": "^5.7.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "viem": "^1.10.9"
   }
 }

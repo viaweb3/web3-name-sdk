@@ -1,9 +1,9 @@
 import { providers } from 'ethers'
-import { namehash } from 'ethers/lib/utils'
+import { namehash } from 'viem/ens'
 import { availableChains, rpcUrls } from './constants/chains'
 import { TLD } from './constants/tld'
-import { getResolverContract, getSIDContract } from './utils'
 import { LensProtocol } from './lens'
+import { getResolverContract, getResolverContractByTld, getSIDContract, getTldInfo } from './utils'
 import { validateName } from './utils/validate'
 
 export class SID {
@@ -49,7 +49,7 @@ export class SID {
     }
   }
 
-  async getAddress(domain: string) {
+  async getAddress(domain: string, { rpcUrl }: { rpcUrl?: string } = {}): Promise<string | null> {
     const tld = domain.split('.').pop()
     if (!tld) {
       return null
@@ -63,20 +63,16 @@ export class SID {
         return await providers.getDefaultProvider().resolveName(domain)
       }
 
-      if (tld === TLD.ARB) {
-        const provider = new providers.JsonRpcProvider(rpcUrls[42161], 42161)
-        const resolver = await this.getResolver(domain, 42161, provider)
-        const res = await resolver?.getAddress()
-        return res ?? null
-      }
-
       if (tld === TLD.LENS) {
         return await LensProtocol.getAddress(domain)
       }
 
-      const provider = new providers.JsonRpcProvider(rpcUrls[56], 56)
-      const resolver = await this.getResolver(domain, 56, provider)
-      const res = await resolver?.getAddress()
+      // Get TLD info from verified TLD hub
+      const tldInfoList = await getTldInfo([tld])
+      // Get resolver contract from registry contract
+      const resolverContract = await getResolverContractByTld(domain, tldInfoList[0], rpcUrl)
+      // Get address from resolver contract
+      const res = await resolverContract.read.addr([namehash(domain)])
       return res ?? null
     } catch (error) {
       console.error(`Error getting address for ${domain}`, error)

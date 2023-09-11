@@ -1,6 +1,11 @@
 import { ethers, providers } from 'ethers'
-import { abi as resolverAbi } from '../abi/Resolver.json'
+import { Address, createPublicClient, getContract, http, namehash } from 'viem'
+import { ResolverAbi } from '../abi/Resolver'
 import { abi as sidAbi } from '../abi/SID.json'
+import { SIDRegistryAbi } from '../abi/SIDRegistry'
+import { bscTestnet } from 'viem/dist/types/chains'
+import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
+import { CONTRACTS } from '../constants/contracts'
 
 export function getSIDContract(chainId: number, provider: providers.Provider): ethers.Contract {
   return new ethers.Contract(getContractAddr(chainId), sidAbi, provider)
@@ -13,7 +18,7 @@ export function getResolverContract({
   resolverAddr: string
   provider: providers.Provider
 }) {
-  return new ethers.Contract(resolverAddr, resolverAbi, provider)
+  return new ethers.Contract(resolverAddr, ResolverAbi, provider)
 }
 
 export function getChainId(address: string) {
@@ -45,4 +50,65 @@ function getContractAddr(chainId: number) {
   }
 
   return ''
+}
+
+export async function getTldInfo(tldList: string[]) {
+  const bnbClient = createPublicClient({
+    chain: bscTestnet,
+    transport: http(),
+  })
+
+  const hubContract = getContract({
+    address: CONTRACTS.verifiedTldHub,
+    abi: VerifiedTldHubAbi,
+    publicClient: bnbClient,
+  })
+
+  const tldInfoList = await hubContract.read.getTldInfo([tldList])
+  return tldInfoList
+}
+
+/**
+ * Get resolver contract by TLD
+ *
+ * @export
+ * @param {string} domain
+ * @param {TldInfo} tldInfo
+ * @param {string} [rpcUrl]
+ * @return {*}
+ */
+export async function getResolverContractByTld(domain: string, tldInfo: TldInfo, rpcUrl?: string) {
+  const client = createPublicClient({
+    chain: {
+      id: Number(tldInfo.chainId),
+      rpcUrls: {
+        default: { http: [rpcUrl || tldInfo.defaultRpc] },
+        public: { http: [rpcUrl || tldInfo.defaultRpc] },
+      },
+      name: '',
+      network: '',
+      nativeCurrency: {
+        decimals: 18,
+        name: '',
+        symbol: '',
+      },
+    },
+    transport: http(),
+  })
+
+  const registryContract = getContract({
+    address: tldInfo.registry as Address,
+    abi: SIDRegistryAbi,
+    publicClient: client,
+  })
+
+  const resolverAddr = await registryContract.read.resolver([namehash(domain)])
+
+  const resolverContract = getContract({
+    address: resolverAddr,
+    abi: ResolverAbi,
+    publicClient: client,
+  })
+
+  return resolverContract
 }
