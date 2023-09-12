@@ -1,45 +1,63 @@
 import { providers } from 'ethers'
 import { namehash } from 'viem/ens'
-import { availableChains, rpcUrls } from './constants/chains'
 import { TLD } from './constants/tld'
 import { LensProtocol } from './lens'
-import { getResolverContract, getResolverContractByTld, getSIDContract, getTldInfo } from './utils'
 import { validateName } from './utils/validate'
+import { ContractUtils } from './utils/contract'
+
+type GetDomainNameProps = {
+  queryChainIdList?: number[]
+  queryTldList?: string[]
+  address: string
+}
 
 export class SID {
-  /**
-   * Get domain name for address
-   *
-   * @param {string} address
-   * @param {ChainId} [chainId]
-   * @return {(Promise<string | null>)} domain name
-   * @memberof SID
-   */
-  async getDomainName(address: string, chainId?: number): Promise<string | null> {
-    const reverseNode = `${address.slice(2)}.addr.reverse`
-    const reverseNamehash = namehash(reverseNode)
+  contractUtils = new ContractUtils()
+
+  async getDomainName({
+    address,
+    queryChainIdList,
+    queryTldList,
+  }: GetDomainNameProps): Promise<string | null> {
     try {
-      const chains = chainId ? [chainId] : availableChains
-      for (const _id of chains) {
-        const provider = new providers.JsonRpcProvider(rpcUrls[_id], _id)
-        const sidContract = getSIDContract(_id, provider)
-        const resolverAddr = await sidContract.resolver(reverseNamehash)
-        if (parseInt(resolverAddr, 16) === 0) {
-          continue
-        }
-        const resolverContract = getResolverContract({
-          resolverAddr,
-          provider,
-        })
-        const name = await resolverContract.name(reverseNamehash)
-        if (name) {
-          return name
-        }
+      const reverseNode = `${address.slice(2)}.addr.reverse`
+      const reverseNamehash = namehash(reverseNode)
+
+      const hubContract = this.contractUtils.getVerifiedTldHubContract()
+
+      const chainTlds: string[] = []
+      for (const chainId of queryChainIdList ?? []) {
+        const tlds = await hubContract.read.getChainTlds([BigInt(chainId)])
+        chainTlds.push(...tlds)
       }
 
-      const lensName = await LensProtocol.getDomainName(address)
-      if (lensName) {
-        return lensName
+      const tlds = queryTldList ?? []
+      if (tlds.length === 0) {
+        const allTlds = await hubContract.read.getTlds()
+        tlds.push(...allTlds)
+      }
+
+      const reqTlds = queryChainIdList?.length
+        ? tlds.filter((tld) => chainTlds.includes(tld))
+        : tlds
+      const tldInfoList = await this.contractUtils.getTldInfo(reqTlds)
+
+      const resList: (string | null)[] = []
+      for await (const tld of tldInfoList) {
+        if (!tld.tld) continue
+        const baseContract = await this.contractUtils.getReverseResolverContract(reverseNode, tld)
+        const name = await baseContract.read.name([reverseNamehash])
+        resList.push(name)
+      }
+      if (resList.length > 0) return resList.at(0) ?? null
+
+      if (queryTldList?.includes(TLD.LENS)) {
+        const lensName = await LensProtocol.getDomainName(address)
+        if (lensName) {
+          return lensName
+        }
+      } else {
+        return resList.at(0) ?? null
       }
 
       return null
@@ -68,48 +86,19 @@ export class SID {
       }
 
       // Get TLD info from verified TLD hub
-      const tldInfoList = await getTldInfo([tld])
+      const tldInfoList = await this.contractUtils.getTldInfo([tld])
       // Get resolver contract from registry contract
-      const resolverContract = await getResolverContractByTld(domain, tldInfoList[0], rpcUrl)
+      const resolverContract = await this.contractUtils.getResolverContractByTld(
+        domain,
+        tldInfoList[0],
+        rpcUrl
+      )
       // Get address from resolver contract
       const res = await resolverContract.read.addr([namehash(domain)])
       return res ?? null
     } catch (error) {
       console.error(`Error getting address for ${domain}`, error)
       return null
-    }
-  }
-
-  async getResolver(domain: string, chainId: number, provider: providers.Provider) {
-    let currentName = domain
-    let currentNamehash = namehash(currentName)
-    while (true) {
-      if (currentName === '' || currentName === '.') {
-        return null
-      }
-      if (!currentName.includes('.')) {
-        return null
-      }
-      const sidContract = getSIDContract(chainId, provider)
-      const resolverAddr = await sidContract.resolver(currentNamehash)
-      if (resolverAddr !== null) {
-        const resolverContract = getResolverContract({
-          resolverAddr,
-          provider,
-        })
-        if (currentName !== domain && !(await resolverContract.supportsInterface('0x9061b923'))) {
-          return null
-        }
-
-        const resolver = new providers.Resolver(
-          provider as providers.BaseProvider,
-          resolverAddr,
-          domain
-        )
-        return resolver
-      }
-      currentName = currentName.split('.').slice(1).join('.')
-      currentNamehash = namehash(currentName)
     }
   }
 }
