@@ -49,6 +49,21 @@ describe('SID Name resolving', () => {
     expect(address?.toLowerCase()).to.be.eq('0xd80efa68b50d21e548b9cdb092ebc6e5bca113e7')
   }).timeout(10000)
 
+  it('it should properly resolve .crypto domain', async () => {
+    const sid = createSID()
+    const domainName = await sid.getAddress('beresnev.crypto')
+    expect(domainName).to.be.eq('0x6ec0deed30605bcd19342f3c30201db263291589')
+  }).timeout(10000)
+
+  it('it should properly resolve .crypto address', async () => {
+    const sid = createSID()
+    const domainName = await sid.getDomainName({
+      address: '0x6ec0deed30605bcd19342f3c30201db263291589',
+      queryTldList: ['crypto'],
+    })
+    expect(domainName).to.be.eq('kirill.x')
+  }).timeout(10000)
+
   it('it should throw error with invalid .bnb domain name', async () => {
     const sid = createSID()
     expect(sid.getAddress('xz.bnb')).to.rejectedWith(Error)

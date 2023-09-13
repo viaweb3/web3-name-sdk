@@ -1,9 +1,10 @@
 import { providers } from 'ethers'
 import { namehash } from 'viem/ens'
+import { UDResolver } from './UD'
 import { TLD } from './constants/tld'
 import { LensProtocol } from './lens'
-import { validateName } from './utils/validate'
 import { ContractUtils } from './utils/contract'
+import { validateName } from './utils/validate'
 
 type GetDomainNameProps = {
   queryChainIdList?: number[]
@@ -49,13 +50,15 @@ export class SID {
         const name = await baseContract.read.name([reverseNamehash])
         resList.push(name)
       }
-      if (resList.length > 0) return resList.at(0) ?? null
 
       if (queryTldList?.includes(TLD.LENS)) {
         const lensName = await LensProtocol.getDomainName(address)
         if (lensName) {
           return lensName
         }
+      } else if (queryTldList?.includes(TLD.CRYPTO)) {
+        const UD = new UDResolver()
+        return await UD.getName(address)
       } else {
         return resList.at(0) ?? null
       }
@@ -73,7 +76,7 @@ export class SID {
       return null
     }
 
-    if (tld !== TLD.ENS && tld !== TLD.LENS) {
+    if (tld !== TLD.ENS && tld !== TLD.LENS && tld !== TLD.CRYPTO) {
       validateName(domain)
     }
     try {
@@ -83,6 +86,11 @@ export class SID {
 
       if (tld === TLD.LENS) {
         return await LensProtocol.getAddress(domain)
+      }
+
+      if (tld === TLD.CRYPTO) {
+        const UD = new UDResolver()
+        return await UD.getAddress(domain)
       }
 
       // Get TLD info from verified TLD hub

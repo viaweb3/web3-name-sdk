@@ -3,4 +3,5 @@ export enum TLD {
   BNB = 'bnb',
   ARB = 'arb',
   LENS = 'lens',
+  CRYPTO = 'crypto',
 }
