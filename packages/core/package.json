@@ -2,9 +2,9 @@
   "name": "@web3-name-sdk/core",
   "version": "0.1.0",
   "description": "One stop Web3 domain name resolution",
-  "main": "index.js",
+  "main": "/dist/index.js",
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --clean",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "lint": "prettier --write .",
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts"
   },
@@ -22,6 +22,18 @@
   "peerDependencies": {
     "@adraffy/ens-normalize": "^1.9.2",
     "@ensdomains/ens-validation": "^0.1.0",
+    "ethers": "^5.7.2",
+    "lodash": "^4.17.21",
+    "viem": "^1.10.9"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "files": [
+    "/dist"
+  ],
+  "dependencies": {
+    "@web3-name-sdk/core": "^0.1.0",
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",
     "viem": "^1.10.9"
