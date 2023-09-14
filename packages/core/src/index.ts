@@ -13,7 +13,7 @@ type GetDomainNameProps = {
 }
 
 export class SID {
-  contractUtils = new ContractUtils()
+  private contractUtils = new ContractUtils()
 
   async getDomainName({
     address,

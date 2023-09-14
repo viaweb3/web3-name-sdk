@@ -1,15 +1,26 @@
-import { createPublicClient, getContract, http, namehash } from 'viem'
+import {
+  type HttpTransport,
+  type PublicClient,
+  createPublicClient,
+  getContract,
+  http,
+  namehash,
+  type GetContractReturnType,
+} from 'viem'
 import { bscTestnet } from 'viem/chains'
+import { createCustomClient } from '.'
 import { ResolverAbi } from '../abi/Resolver'
 import { ReverseResolverAbi } from '../abi/ReverseResolver'
 import { SIDRegistryAbi } from '../abi/SIDRegistry'
 import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
 import { CONTRACTS } from '../constants/contracts'
-import { createCustomClient } from '.'
 
 export class ContractUtils {
   /** Get verified TLD hub contract */
-  getVerifiedTldHubContract() {
+  getVerifiedTldHubContract(): GetContractReturnType<
+    typeof VerifiedTldHubAbi,
+    PublicClient<HttpTransport>
+  > {
     const bnbClient = createPublicClient({
       chain: bscTestnet,
       transport: http(),
@@ -25,7 +36,10 @@ export class ContractUtils {
   }
 
   /** Get reverse resolver contract */
-  async getReverseResolverContract(reverseNode: string, tldInfo: TldInfo) {
+  async getReverseResolverContract(
+    reverseNode: string,
+    tldInfo: TldInfo
+  ): Promise<GetContractReturnType<typeof ReverseResolverAbi, PublicClient<HttpTransport>>> {
     const client = createCustomClient(tldInfo)
     const registryContract = getContract({
       address: tldInfo.registry,
@@ -57,7 +71,11 @@ export class ContractUtils {
    * @param {string} [rpcUrl]
    * @return {*}
    */
-  async getResolverContractByTld(domain: string, tldInfo: TldInfo, rpcUrl?: string) {
+  async getResolverContractByTld(
+    domain: string,
+    tldInfo: TldInfo,
+    rpcUrl?: string
+  ): Promise<GetContractReturnType<typeof ResolverAbi, PublicClient<HttpTransport>>> {
     const client = createCustomClient(tldInfo, rpcUrl)
     const registryContract = getContract({
       address: tldInfo.registry,

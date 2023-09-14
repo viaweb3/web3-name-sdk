@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { createSID } from '@web3-name-sdk/core'
+import { createSID } from '@web3-name-sdk/core/dist'
 
 function App() {
   const [count, setCount] = useState(0)
   const sid = createSID()
   useEffect(() => {
-    sid.getAddress('allen.bnb').then((address: string) => {
+    sid.getAddress('allen.bnb').then((address) => {
       console.log(address)
     })
   }, [])
