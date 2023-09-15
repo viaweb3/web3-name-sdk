@@ -1,30 +1,21 @@
 import { ens_normalize } from '@adraffy/ens-normalize'
-import { decodeLabelhash, isEncodedLabelhash } from './labels'
-import { concat, keccak256 } from 'ethers/lib/utils'
+import { Address, namehash, toHex } from 'viem'
 
 export const normalize = (name: string) => (name ? ens_normalize(name) : name)
 
-export function namehash(inputName: string): string {
-  let node = ''
-  for (let i = 0; i < 32; i++) {
-    node += '00'
-  }
+// const ZERO_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
-  if (inputName) {
-    const labels = inputName.split('.')
+export function customTldNamehash(inputName: string, identifier: bigint): Address {
+  // const identifierBaseNode = keccak256(
+  //   concat([hexToBytes(ZERO_HASH), hexToBytes(toHex(identifier, { size: 32 }))])
+  // )
+  // const tldBaseNode = keccak256(
+  //   concat([hexToBytes(identifierBaseNode), hexToBytes(keccak256(toHex('woaf8')))])
+  // )
+  // const nodeHash2 = keccak256(
+  //   concat([hexToBytes(tldBaseNode), hexToBytes(keccak256(toHex('build')))])
+  // )
 
-    for (let i = labels.length - 1; i >= 0; i--) {
-      let labelSha
-      if (isEncodedLabelhash(labels[i])) {
-        labelSha = decodeLabelhash(labels[i])
-      } else {
-        let normalisedLabel = normalize(labels[i])
-        labelSha = keccak256(normalisedLabel)
-      }
-
-      node = keccak256(concat([node, labelSha]))
-    }
-  }
-
-  return '0x' + node
+  const fullNameNode = `${inputName}.[${toHex(identifier, { size: 32 }).slice(2)}]`
+  return namehash(fullNameNode)
 }

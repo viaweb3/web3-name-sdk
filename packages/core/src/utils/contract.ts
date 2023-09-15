@@ -14,6 +14,7 @@ import { ReverseResolverAbi } from '../abi/ReverseResolver'
 import { SIDRegistryAbi } from '../abi/SIDRegistry'
 import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
 import { CONTRACTS } from '../constants/contracts'
+import { customTldNamehash } from './namehash'
 
 export class ContractUtils {
   /** Get verified TLD hub contract */
@@ -47,19 +48,19 @@ export class ContractUtils {
       publicClient: client,
     })
     const resolverAddr = await registryContract.read.resolver([namehash(reverseNode)])
-    const hubContract = getContract({
-      address: resolverAddr,
+    const resolverContract = getContract({
+      address: resolverAddr ?? '',
       abi: ReverseResolverAbi,
       publicClient: client,
     })
 
-    return hubContract
+    return resolverContract
   }
 
   async getTldInfo(tldList: string[]) {
     const hubContract = this.getVerifiedTldHubContract()
     const tldInfoList = await hubContract.read.getTldInfo([tldList])
-    return tldInfoList
+    return tldInfoList.filter((e) => !!e.tld)
   }
 
   /**
@@ -82,9 +83,14 @@ export class ContractUtils {
       abi: SIDRegistryAbi,
       publicClient: client,
     })
-    const resolverAddr = await registryContract.read.resolver([namehash(domain)])
+    console.log('domain', customTldNamehash(domain, tldInfo.identifier.valueOf()))
+    const resolverAddr = await registryContract.read.resolver([
+      customTldNamehash(domain, tldInfo.identifier.valueOf()),
+    ])
+
     const resolverContract = getContract({
-      address: resolverAddr,
+      address:
+        BigInt(resolverAddr) > 0 ? resolverAddr : '0xf793A2F34ec6F4F5c4bb2dc2f7D4504d14dc4169',
       abi: ResolverAbi,
       publicClient: client,
     })

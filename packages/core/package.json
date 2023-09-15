@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "lint": "prettier --write .",
-    "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts"
+    "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
+    "test:v3": "ts-mocha -p tsconfig.json tests/sidV3.spec.ts"
   },
   "author": "",
   "license": "ISC",

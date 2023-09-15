@@ -5,6 +5,7 @@ import { TLD } from './constants/tld'
 import { LensProtocol } from './lens'
 import { ContractUtils } from './utils/contract'
 import { validateName } from './utils/validate'
+import { Address } from 'viem'
 
 type GetDomainNameProps = {
   queryChainIdList?: number[]
@@ -44,7 +45,21 @@ export class SID {
       const tldInfoList = await this.contractUtils.getTldInfo(reqTlds)
 
       const resList: (string | null)[] = []
-      for await (const tld of tldInfoList) {
+
+      const tempInfo = [
+        ...tldInfoList,
+        {
+          tld: 'woaf8',
+          identifier: BigInt(
+            '2615353277007099930642231241208939993573210331169845997366433981082573'
+          ),
+          registry: '0x907B822bb3257e47b3F1106Ee7db2b5Df68D7631' as Address,
+          chainId: BigInt(97),
+          defaultRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+        },
+      ]
+
+      for await (const tld of tempInfo) {
         if (!tld.tld) continue
         const baseContract = await this.contractUtils.getReverseResolverContract(reverseNode, tld)
         const name = await baseContract.read.name([reverseNamehash])
@@ -71,7 +86,7 @@ export class SID {
   }
 
   async getAddress(domain: string, { rpcUrl }: { rpcUrl?: string } = {}): Promise<string | null> {
-    const tld = domain.split('.').pop()
+    const tld = domain.split('.').pop()?.toLowerCase()
     if (!tld) {
       return null
     }
@@ -98,7 +113,18 @@ export class SID {
       // Get resolver contract from registry contract
       const resolverContract = await this.contractUtils.getResolverContractByTld(
         domain,
-        tldInfoList[0],
+        [
+          ...tldInfoList,
+          {
+            tld: 'woaf5',
+            identifier: BigInt(
+              '2615353277007099930642231241208939993573210331169845997366433981082573'
+            ),
+            registry: '0x907B822bb3257e47b3F1106Ee7db2b5Df68D7631' as Address,
+            chainId: BigInt(97),
+            defaultRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+          },
+        ][0],
         rpcUrl
       )
       // Get address from resolver contract
