@@ -1,27 +1,26 @@
 import {
-  type HttpTransport,
-  type PublicClient,
+  Address,
   createPublicClient,
   getContract,
+  hexToNumber,
   http,
   namehash,
   type GetContractReturnType,
+  type HttpTransport,
+  type PublicClient,
 } from 'viem'
 import { bscTestnet } from 'viem/chains'
 import { createCustomClient } from '.'
 import { ResolverAbi } from '../abi/Resolver'
 import { ReverseResolverAbi } from '../abi/ReverseResolver'
+import { ReverseResolverV3Abi } from '../abi/ReverserResolverV3'
 import { SIDRegistryAbi } from '../abi/SIDRegistry'
 import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
 import { CONTRACTS } from '../constants/contracts'
-import { customTldNamehash } from './namehash'
 
-export class ContractUtils {
+export class ContractReader {
   /** Get verified TLD hub contract */
-  getVerifiedTldHubContract(): GetContractReturnType<
-    typeof VerifiedTldHubAbi,
-    PublicClient<HttpTransport>
-  > {
+  getVerifiedTldHubContract(): GetContractReturnType<typeof VerifiedTldHubAbi, PublicClient<HttpTransport>> {
     const bnbClient = createPublicClient({
       chain: bscTestnet,
       transport: http(),
@@ -57,6 +56,33 @@ export class ContractUtils {
     return resolverContract
   }
 
+  async getReverseResolverV3Contract(
+    reverseNode: string,
+    tldInfo: TldInfo
+  ): Promise<GetContractReturnType<typeof ReverseResolverV3Abi, PublicClient<HttpTransport>>> {
+    const client = createCustomClient(tldInfo)
+    const registryContract = getContract({
+      address: tldInfo.registry,
+      abi: SIDRegistryAbi,
+      publicClient: client,
+    })
+    console.log('reverseNode', namehash(reverseNode))
+    const resolverAddr = await registryContract.read.resolver([namehash(reverseNode)])
+
+    if (!resolverAddr) {
+      throw new Error(
+        'Resolver address is null. Please check if the reverse node is registered on the registry contract'
+      )
+    }
+    const resolverContract = getContract({
+      address: resolverAddr,
+      abi: ReverseResolverV3Abi,
+      publicClient: client,
+    })
+
+    return resolverContract
+  }
+
   async getTldInfo(tldList: string[]) {
     const hubContract = this.getVerifiedTldHubContract()
     const tldInfoList = await hubContract.read.getTldInfo([tldList])
@@ -73,7 +99,7 @@ export class ContractUtils {
    * @return {*}
    */
   async getResolverContractByTld(
-    domain: string,
+    namehash: Address,
     tldInfo: TldInfo,
     rpcUrl?: string
   ): Promise<GetContractReturnType<typeof ResolverAbi, PublicClient<HttpTransport>>> {
@@ -83,14 +109,14 @@ export class ContractUtils {
       abi: SIDRegistryAbi,
       publicClient: client,
     })
-    console.log('domain', customTldNamehash(domain, tldInfo.identifier.valueOf()))
-    const resolverAddr = await registryContract.read.resolver([
-      customTldNamehash(domain, tldInfo.identifier.valueOf()),
-    ])
+
+    const resolverAddr = await registryContract.read.resolver([namehash])
+    if (!hexToNumber(resolverAddr)) {
+      throw 'resolver address is null'
+    }
 
     const resolverContract = getContract({
-      address:
-        BigInt(resolverAddr) > 0 ? resolverAddr : '0xf793A2F34ec6F4F5c4bb2dc2f7D4504d14dc4169',
+      address: resolverAddr,
       abi: ResolverAbi,
       publicClient: client,
     })

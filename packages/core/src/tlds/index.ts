@@ -1,0 +1,3 @@
+class TldResolver {
+  getName() {}
+}

@@ -21,3 +21,8 @@ export function createCustomClient(tldInfo: TldInfo, rpcUrl?: string): PublicCli
 
   return client
 }
+
+const v2Tlds = new Set(['bnb', 'arb', 'eth'])
+export function isV2Tld(tld: string) {
+  return v2Tlds.has(tld)
+}

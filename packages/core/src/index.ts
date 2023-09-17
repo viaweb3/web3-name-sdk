@@ -1,11 +1,13 @@
-import { providers } from 'ethers'
-import { namehash } from 'viem/ens'
+import { createPublicClient, http } from 'viem'
+import { mainnet } from 'viem/chains'
+import { namehash, normalize } from 'viem/ens'
 import { UDResolver } from './UD'
-import { TLD } from './constants/tld'
+import { TLD, exampleTld } from './constants/tld'
 import { LensProtocol } from './lens'
-import { ContractUtils } from './utils/contract'
+import { isV2Tld } from './utils'
+import { ContractReader } from './utils/contract'
+import { tldNamehash } from './utils/namehash'
 import { validateName } from './utils/validate'
-import { Address } from 'viem'
 
 type GetDomainNameProps = {
   queryChainIdList?: number[]
@@ -13,20 +15,18 @@ type GetDomainNameProps = {
   address: string
 }
 
-export class SID {
-  private contractUtils = new ContractUtils()
+export class Web3Name {
+  private contractUtils = new ContractReader()
 
-  async getDomainName({
-    address,
-    queryChainIdList,
-    queryTldList,
-  }: GetDomainNameProps): Promise<string | null> {
+  async getDomainName({ address, queryChainIdList, queryTldList }: GetDomainNameProps): Promise<string | null> {
     try {
-      const reverseNode = `${address.slice(2)}.addr.reverse`
+      // Calculate reverse node and namehash
+      const reverseNode = `${address.toLowerCase().slice(2)}.addr.reverse`
       const reverseNamehash = namehash(reverseNode)
 
       const hubContract = this.contractUtils.getVerifiedTldHubContract()
 
+      // Fetch TLDs from requested chains
       const chainTlds: string[] = []
       for (const chainId of queryChainIdList ?? []) {
         const tlds = await hubContract.read.getChainTlds([BigInt(chainId)])
@@ -34,35 +34,29 @@ export class SID {
       }
 
       const tlds = queryTldList ?? []
+      // Fetch all TLDs if no TLDs are specified
       if (tlds.length === 0) {
         const allTlds = await hubContract.read.getTlds()
         tlds.push(...allTlds)
       }
 
-      const reqTlds = queryChainIdList?.length
-        ? tlds.filter((tld) => chainTlds.includes(tld))
-        : tlds
+      const reqTlds = queryChainIdList?.length ? tlds.filter((tld) => chainTlds.includes(tld)) : tlds
       const tldInfoList = await this.contractUtils.getTldInfo(reqTlds)
 
       const resList: (string | null)[] = []
 
-      const tempInfo = [
-        ...tldInfoList,
-        {
-          tld: 'woaf8',
-          identifier: BigInt(
-            '2615353277007099930642231241208939993573210331169845997366433981082573'
-          ),
-          registry: '0x907B822bb3257e47b3F1106Ee7db2b5Df68D7631' as Address,
-          chainId: BigInt(97),
-          defaultRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-        },
-      ]
+      const tempInfo = [...tldInfoList]
 
       for await (const tld of tempInfo) {
         if (!tld.tld) continue
-        const baseContract = await this.contractUtils.getReverseResolverContract(reverseNode, tld)
-        const name = await baseContract.read.name([reverseNamehash])
+        let name = ''
+        if (isV2Tld(tld.tld)) {
+          const contract = await this.contractUtils.getReverseResolverContract(reverseNode, tld)
+          name = await contract.read.name([reverseNamehash])
+        } else {
+          const contract = await this.contractUtils.getResolverContractByTld(reverseNamehash, tld)
+          name = await contract.read.tldNames([reverseNamehash, tld.identifier])
+        }
         resList.push(name)
       }
 
@@ -91,12 +85,20 @@ export class SID {
       return null
     }
 
+    const normalizedDomain = normalize(domain)
+
     if (tld !== TLD.ENS && tld !== TLD.LENS && tld !== TLD.CRYPTO) {
       validateName(domain)
     }
     try {
       if (tld === TLD.ENS) {
-        return await providers.getDefaultProvider().resolveName(domain)
+        const publicClient = createPublicClient({
+          chain: mainnet,
+          transport: http(),
+        })
+        return await publicClient.getEnsAddress({
+          name: normalizedDomain,
+        })
       }
 
       if (tld === TLD.LENS) {
@@ -110,26 +112,20 @@ export class SID {
 
       // Get TLD info from verified TLD hub
       const tldInfoList = await this.contractUtils.getTldInfo([tld])
+
+      // TODO:
+      const tldInfo = [...tldInfoList, exampleTld][0]
+
+      if (!tldInfo) {
+        throw 'TLD not found'
+      }
+
+      const namehash = tldNamehash(normalizedDomain, isV2Tld(tld) ? undefined : tldInfo.identifier)
       // Get resolver contract from registry contract
-      const resolverContract = await this.contractUtils.getResolverContractByTld(
-        domain,
-        [
-          ...tldInfoList,
-          {
-            tld: 'woaf5',
-            identifier: BigInt(
-              '2615353277007099930642231241208939993573210331169845997366433981082573'
-            ),
-            registry: '0x907B822bb3257e47b3F1106Ee7db2b5Df68D7631' as Address,
-            chainId: BigInt(97),
-            defaultRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-          },
-        ][0],
-        rpcUrl
-      )
+      const resolverContract = await this.contractUtils.getResolverContractByTld(namehash, tldInfo, rpcUrl)
       // Get address from resolver contract
-      const res = await resolverContract.read.addr([namehash(domain)])
-      return res ?? null
+      const res = await resolverContract.read.addr([namehash])
+      return res
     } catch (error) {
       console.error(`Error getting address for ${domain}`, error)
       return null
@@ -137,6 +133,6 @@ export class SID {
   }
 }
 
-export function createSID() {
-  return new SID()
+export function createWeb3Name() {
+  return new Web3Name()
 }

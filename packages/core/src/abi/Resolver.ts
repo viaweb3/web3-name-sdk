@@ -1,13 +1,21 @@
 export const ResolverAbi = [
   {
     inputs: [
-      { internalType: 'contract SID', name: '_sid', type: 'address' },
-      { internalType: 'contract INameWrapper', name: 'wrapperAddress', type: 'address' },
-      { internalType: 'address', name: '_trustedETHController', type: 'address' },
-      { internalType: 'address', name: '_trustedReverseRegistrar', type: 'address' },
+      { internalType: 'contract SidRegistry', name: '_sidRegistry', type: 'address' },
+      { internalType: 'address', name: '_trustedController', type: 'address' },
+      { internalType: 'uint256', name: 'chainType', type: 'uint256' },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: true, internalType: 'uint256', name: 'contentType', type: 'uint256' },
+    ],
+    name: 'ABIChanged',
+    type: 'event',
   },
   {
     anonymous: false,
@@ -39,6 +47,86 @@ export const ResolverAbi = [
     type: 'event',
   },
   {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes', name: 'hash', type: 'bytes' },
+    ],
+    name: 'ContenthashChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: true, internalType: 'bytes4', name: 'interfaceID', type: 'bytes4' },
+      { indexed: false, internalType: 'address', name: 'implementer', type: 'address' },
+    ],
+    name: 'InterfaceChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'string', name: 'name', type: 'string' },
+    ],
+    name: 'NameChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'previousOwner', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'newOwner', type: 'address' },
+    ],
+    name: 'OwnershipTransferred',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes32', name: 'x', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes32', name: 'y', type: 'bytes32' },
+    ],
+    name: 'PubkeyChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: true, internalType: 'string', name: 'indexedKey', type: 'string' },
+      { indexed: false, internalType: 'string', name: 'key', type: 'string' },
+    ],
+    name: 'TextChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'uint256', name: 'identifier', type: 'uint256' },
+      { indexed: false, internalType: 'string', name: 'name', type: 'string' },
+    ],
+    name: 'TldNameChanged',
+    type: 'event',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'uint256', name: 'contentTypes', type: 'uint256' },
+    ],
+    name: 'ABI',
+    outputs: [
+      { internalType: 'uint256', name: '', type: 'uint256' },
+      { internalType: 'bytes', name: '', type: 'bytes' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
     name: 'addr',
     outputs: [{ internalType: 'address payable', name: '', type: 'address' }],
@@ -48,10 +136,34 @@ export const ResolverAbi = [
   {
     inputs: [
       { internalType: 'bytes32', name: 'node', type: 'bytes32' },
-      { internalType: 'uint256', name: 'coinType', type: 'uint256' },
+      { internalType: 'uint256', name: 'chainType', type: 'uint256' },
     ],
     name: 'addr',
     outputs: [{ internalType: 'bytes', name: '', type: 'bytes' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'contenthash',
+    outputs: [{ internalType: 'bytes', name: '', type: 'bytes' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'defaultChainType',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'bytes4', name: 'interfaceID', type: 'bytes4' },
+    ],
+    name: 'interfaceImplementer',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -73,9 +185,69 @@ export const ResolverAbi = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'name',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'owner',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'pubkey',
+    outputs: [
+      { internalType: 'bytes32', name: 'x', type: 'bytes32' },
+      { internalType: 'bytes32', name: 'y', type: 'bytes32' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'controller', type: 'address' }],
+    name: 'removeTrustedController',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [
       { internalType: 'bytes32', name: 'node', type: 'bytes32' },
-      { internalType: 'uint256', name: 'coinType', type: 'uint256' },
+      { internalType: 'uint256', name: 'contentType', type: 'uint256' },
+      { internalType: 'bytes', name: 'data', type: 'bytes' },
+    ],
+    name: 'setABI',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'uint256', name: 'chainType', type: 'uint256' },
+      { internalType: 'address', name: 'a', type: 'address' },
+    ],
+    name: 'setAddr',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'uint256', name: 'chainType', type: 'uint256' },
       { internalType: 'bytes', name: 'a', type: 'bytes' },
     ],
     name: 'setAddr',
@@ -104,10 +276,118 @@ export const ResolverAbi = [
     type: 'function',
   },
   {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'bytes', name: 'hash', type: 'bytes' },
+    ],
+    name: 'setContenthash',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'bytes4', name: 'interfaceID', type: 'bytes4' },
+      { internalType: 'address', name: 'implementer', type: 'address' },
+    ],
+    name: 'setInterface',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'uint256', name: 'identifier', type: 'uint256' },
+      { internalType: 'string', name: 'newName', type: 'string' },
+    ],
+    name: 'setName',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'string', name: 'newName', type: 'string' },
+    ],
+    name: 'setName',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'newController', type: 'address' }],
+    name: 'setNewTrustedController',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'bytes32', name: 'x', type: 'bytes32' },
+      { internalType: 'bytes32', name: 'y', type: 'bytes32' },
+    ],
+    name: 'setPubkey',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'string', name: 'key', type: 'string' },
+      { internalType: 'string', name: 'value', type: 'string' },
+    ],
+    name: 'setText',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [{ internalType: 'bytes4', name: 'interfaceID', type: 'bytes4' }],
     name: 'supportsInterface',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'string', name: 'key', type: 'string' },
+    ],
+    name: 'text',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'uint256', name: 'identifier', type: 'uint256' },
+    ],
+    name: 'tldName',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: '', type: 'bytes32' },
+      { internalType: 'uint256', name: '', type: 'uint256' },
+    ],
+    name: 'tldNames',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ] as const
