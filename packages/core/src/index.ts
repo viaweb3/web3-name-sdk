@@ -76,12 +76,12 @@ export class Web3Name {
     }
   }
 
-  async getAddress(domain: string, { rpcUrl }: { rpcUrl?: string } = {}): Promise<string | null> {
-    const tld = domain.split('.').pop()?.toLowerCase()
+  async getAddress(name: string, { rpcUrl }: { rpcUrl?: string } = {}): Promise<string | null> {
+    const tld = name.split('.').pop()?.toLowerCase()
     if (!tld) {
       return null
     }
-    const normalizedDomain = TLD.LENS === tld ? domain : normalize(domain)
+    const normalizedDomain = TLD.LENS === tld ? name : normalize(name)
 
     if (tld !== TLD.ENS && tld !== TLD.LENS && tld !== TLD.CRYPTO) {
       validateName(normalizedDomain)
@@ -99,12 +99,12 @@ export class Web3Name {
       }
 
       if (tld === TLD.LENS) {
-        return await LensProtocol.getAddress(domain)
+        return await LensProtocol.getAddress(name)
       }
 
       if (tld === TLD.CRYPTO) {
         const UD = new UDResolver()
-        return await UD.getAddress(domain)
+        return await UD.getAddress(name)
       }
 
       // Get TLD info from verified TLD hub
@@ -124,7 +124,7 @@ export class Web3Name {
       const res = await resolverContract.read.addr([namehash])
       return res
     } catch (error) {
-      console.error(`Error getting address for ${domain}`, error)
+      console.error(`Error getting address for ${name}`, error)
       return null
     }
   }
@@ -181,6 +181,35 @@ export class Web3Name {
       return resList
     } catch (e) {
       console.log(`Error getting name for reverse record of ${address}`, e)
+      return null
+    }
+  }
+
+  async getDomainRecord({ name, key, rpcUrl }: { name: string; key: string; rpcUrl?: string }) {
+    const tld = name.split('.').pop()?.toLowerCase()
+    if (!tld) {
+      return null
+    }
+
+    try {
+      const normalizedDomain = TLD.LENS === tld ? name : normalize(name)
+
+      const tldInfoList = await this.contractReader.getTldInfo([tld])
+      const tldInfo = tldInfoList[0]
+      if (!tldInfo) {
+        throw 'TLD not found'
+      }
+
+      const namehash = tldNamehash(normalizedDomain, isV2Tld(tld) ? undefined : tldInfo.identifier)
+      // Get resolver contract from registry contract
+      const resolverContract = await this.contractReader.getResolverContractByTld(namehash, tldInfo, rpcUrl)
+      // Get address from resolver contract
+      const res = await resolverContract.read.addr([namehash])
+
+      const record = await resolverContract.read.text([namehash, key])
+      return record
+    } catch (error) {
+      console.error(`Error getting address for ${name}`, error)
       return null
     }
   }
