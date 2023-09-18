@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { createSID } from '@web3-name-sdk/core/dist'
+import { createWeb3Name } from '@web3-name-sdk/core'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const sid = createSID()
+  const [address, setAddress] = useState('')
+  const web3Name = createWeb3Name()
   useEffect(() => {
-    sid.getAddress('allen.bnb').then((address) => {
-      console.log(address)
+    web3Name.getAddress('allen.bnb').then((e) => {
+      setAddress(e ?? 'not found')
     })
-  }, [])
+  }, [web3Name])
   return (
     <>
       <div>
@@ -23,12 +23,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
+      <div className="card">[allen.bnb] address is {address}</div>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
     </>
   )

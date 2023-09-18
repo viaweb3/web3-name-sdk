@@ -62,17 +62,13 @@ export class Web3Name {
 
       if (queryTldList?.includes(TLD.LENS)) {
         const lensName = await LensProtocol.getDomainName(address)
-        if (lensName) {
-          return lensName
-        }
+        return lensName || null
       } else if (queryTldList?.includes(TLD.CRYPTO)) {
         const UD = new UDResolver()
         return await UD.getName(address)
       } else {
         return resList.at(0) ?? null
       }
-
-      return null
     } catch (e) {
       console.log(`Error getting name for reverse record of ${address}`, e)
       return null
@@ -84,12 +80,12 @@ export class Web3Name {
     if (!tld) {
       return null
     }
-
-    const normalizedDomain = normalize(domain)
+    const normalizedDomain = TLD.LENS === tld ? domain : normalize(domain)
 
     if (tld !== TLD.ENS && tld !== TLD.LENS && tld !== TLD.CRYPTO) {
-      validateName(domain)
+      validateName(normalizedDomain)
     }
+
     try {
       if (tld === TLD.ENS) {
         const publicClient = createPublicClient({
