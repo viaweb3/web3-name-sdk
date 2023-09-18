@@ -48,6 +48,10 @@ export class UDResolver {
 
     const res = await registryContract.read.reverseNameOf([address as Address])
 
+    // Only support .crypto
+    if (!res.endsWith('.crypto')) {
+      return null
+    }
     return res
   }
 }

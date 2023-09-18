@@ -55,13 +55,13 @@ describe('SID Name resolving', () => {
     expect(domainName).to.be.eq('0x6ec0deed30605bcd19342f3c30201db263291589')
   }).timeout(10000)
 
-  it('it should properly resolve .crypto address', async () => {
+  it('it should throw an error with none .crypto address', async () => {
     const sid = createWeb3Name()
     const domainName = await sid.getDomainName({
       address: '0x6ec0deed30605bcd19342f3c30201db263291589',
       queryTldList: ['crypto'],
     })
-    expect(domainName).to.be.eq('kirill.x')
+    expect(domainName).to.be.null
   }).timeout(10000)
 
   it('it should throw error with invalid .bnb domain name', async () => {
