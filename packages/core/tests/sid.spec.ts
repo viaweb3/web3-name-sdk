@@ -27,6 +27,7 @@ describe('SID Name resolving', () => {
     const domainName = await sid.getDomainName({
       address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
       queryChainIdList: [56],
+      queryTldList: ['arb'],
     })
     expect(domainName).to.be.eq('spaceid.bnb')
   }).timeout(10000)

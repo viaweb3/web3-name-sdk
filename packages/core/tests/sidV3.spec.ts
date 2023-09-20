@@ -1,14 +1,13 @@
 import chai, { expect } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-import { createSID } from '../src'
-import { namehash } from 'viem'
+import { createWeb3Name } from '../src'
 
 chai.use(chaiAsPromised)
 
-describe('SID Name resolving', () => {
+describe('SID V3 Name resolving', () => {
   it('it should properly resolve address', async () => {
-    const sid = createSID()
-    const domainName = await sid.getAddress('build.woaf8')
-    expect(domainName).to.be.eq('spaceid.eth')
+    const sid = createWeb3Name()
+    const address = await sid.getAddress('gigic.woaf8')
+    expect(address).to.be.not.null
   }).timeout(10000)
 })

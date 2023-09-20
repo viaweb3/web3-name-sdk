@@ -99,6 +99,7 @@ export const ResolverAbi = [
       { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       { indexed: true, internalType: 'string', name: 'indexedKey', type: 'string' },
       { indexed: false, internalType: 'string', name: 'key', type: 'string' },
+      { indexed: false, internalType: 'string', name: 'value', type: 'string' },
     ],
     name: 'TextChanged',
     type: 'event',
@@ -111,6 +112,15 @@ export const ResolverAbi = [
       { indexed: false, internalType: 'string', name: 'name', type: 'string' },
     ],
     name: 'TldNameChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'uint64', name: 'newVersion', type: 'uint64' },
+    ],
+    name: 'VersionChanged',
     type: 'event',
   },
   {
@@ -136,11 +146,18 @@ export const ResolverAbi = [
   {
     inputs: [
       { internalType: 'bytes32', name: 'node', type: 'bytes32' },
-      { internalType: 'uint256', name: 'chainType', type: 'uint256' },
+      { internalType: 'uint256', name: 'coinType', type: 'uint256' },
     ],
     name: 'addr',
     outputs: [{ internalType: 'bytes', name: '', type: 'bytes' }],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'clearRecords',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -152,7 +169,7 @@ export const ResolverAbi = [
   },
   {
     inputs: [],
-    name: 'defaultChainType',
+    name: 'defaultCoinType',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
@@ -209,19 +226,20 @@ export const ResolverAbi = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    name: 'recordVersions',
+    outputs: [{ internalType: 'uint64', name: '', type: 'uint64' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [{ internalType: 'address', name: 'controller', type: 'address' }],
     name: 'removeTrustedController',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
+  { inputs: [], name: 'renounceOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
   {
     inputs: [
       { internalType: 'bytes32', name: 'node', type: 'bytes32' },
@@ -236,18 +254,7 @@ export const ResolverAbi = [
   {
     inputs: [
       { internalType: 'bytes32', name: 'node', type: 'bytes32' },
-      { internalType: 'uint256', name: 'chainType', type: 'uint256' },
-      { internalType: 'address', name: 'a', type: 'address' },
-    ],
-    name: 'setAddr',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
-      { internalType: 'uint256', name: 'chainType', type: 'uint256' },
+      { internalType: 'uint256', name: 'coinType', type: 'uint256' },
       { internalType: 'bytes', name: 'a', type: 'bytes' },
     ],
     name: 'setAddr',
@@ -299,17 +306,6 @@ export const ResolverAbi = [
   {
     inputs: [
       { internalType: 'bytes32', name: 'node', type: 'bytes32' },
-      { internalType: 'uint256', name: 'identifier', type: 'uint256' },
-      { internalType: 'string', name: 'newName', type: 'string' },
-    ],
-    name: 'setName',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
       { internalType: 'string', name: 'newName', type: 'string' },
     ],
     name: 'setName',
@@ -342,6 +338,17 @@ export const ResolverAbi = [
       { internalType: 'string', name: 'value', type: 'string' },
     ],
     name: 'setText',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'uint256', name: 'identifier', type: 'uint256' },
+      { internalType: 'string', name: 'newName', type: 'string' },
+    ],
+    name: 'setTldName',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
