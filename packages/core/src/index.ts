@@ -75,8 +75,11 @@ export class Web3Name {
           }
         }
         if (name) {
-          resList.push(name)
-          break
+          const reverseAddress = await this.getAddress(name)
+          if (reverseAddress === address) {
+            resList.push(name)
+            break
+          }
         }
       }
 
@@ -215,7 +218,12 @@ export class Web3Name {
           }
         }
 
-        if (name) resList.push(name)
+        if (name) {
+          const reverseAddress = await this.getAddress(name)
+          if (reverseAddress === address) {
+            resList.push(name)
+          }
+        }
       }
 
       if (queryTldList?.includes(TLD.LENS)) {
