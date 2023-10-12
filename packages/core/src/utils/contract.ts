@@ -8,6 +8,7 @@ import {
   type GetContractReturnType,
   type HttpTransport,
   type PublicClient,
+  keccak256,
 } from 'viem'
 import { bscTestnet } from 'viem/chains'
 import { createCustomClient } from '.'
@@ -122,5 +123,33 @@ export class ContractReader {
     })
 
     return resolverContract
+  }
+
+  async getTldBaseContract(tldInfo: TldInfo) {
+    const client = createCustomClient(tldInfo)
+
+    const sannContract = getContract({
+      address: tldInfo.sann,
+      abi: SANNContractAbi,
+      publicClient: client,
+    })
+
+    const tldBaseContract = await sannContract.read.tldBase([BigInt(`${tldInfo.identifier}`)])
+
+    return tldBaseContract
+  }
+
+  async getTldMetadata(domain: string, tldInfo: TldInfo) {
+    const client = createCustomClient(tldInfo)
+    const sannContract = getContract({
+      address: tldInfo.sann,
+      abi: SANNContractAbi,
+      publicClient: client,
+    })
+
+    const tldBaseContractAddr = await sannContract.read.tldBase([BigInt(`${tldInfo.identifier}`)])
+    const tldBaseContract = getContract({ address: tldBaseContractAddr, abi: TldBaseContractAbi, publicClient: client })
+    const metadata = await tldBaseContract.read.tokenURI([BigInt(namehash(domain))])
+    return metadata
   }
 }

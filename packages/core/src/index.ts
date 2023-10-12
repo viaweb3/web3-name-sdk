@@ -285,6 +285,26 @@ export class Web3Name {
   async getDomainAvatar({ name, rpcUrl }: { name: string; key: string; rpcUrl?: string }) {
     return await this.getDomainRecord({ name, key: 'avatar', rpcUrl })
   }
+
+  async getMetadata({ name, rpcUrl }: { name: string; rpcUrl?: string }) {
+    const tld = name.split('.').pop()?.toLowerCase()
+    if (!tld) {
+      return null
+    }
+    try {
+      const tldInfo = await this.contractReader.getTldInfo([tld])
+      if (!tldInfo || !tldInfo.at(0)?.sann) {
+        return null
+      }
+
+      const metadata = await this.contractReader.getTldMetadata(name, tldInfo[0])
+      return metadata
+    } catch (error) {
+      console.error(`Error getting metadata for ${name}`, error)
+    }
+
+    return await this.getDomainRecord({ name, key: 'metadata', rpcUrl })
+  }
 }
 
 export function createWeb3Name() {
