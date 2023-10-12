@@ -164,7 +164,7 @@ export class Web3Name {
   }
 
   /**
-   *
+   * Get available domain list from address.
    *
    * @param {GetDomainNameProps} { address, queryChainIdList, queryTldList }
    * @return {*}  {Promise<string[]>}

@@ -1,119 +1,54 @@
 export const VerifiedTldHubAbi = [
-  {
-    inputs: [],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
+  { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
   {
     anonymous: false,
     inputs: [
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'previousOwner',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
+      { indexed: true, internalType: 'address', name: 'previousOwner', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'newOwner', type: 'address' },
     ],
     name: 'OwnershipTransferred',
     type: 'event',
   },
   {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'tld',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'identifier',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'chainId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'address',
-        name: 'registry',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'defaultRpc',
-        type: 'string',
-      },
-    ],
-    name: 'addTldInfo',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'chainId',
-        type: 'uint256',
-      },
-    ],
-    name: 'getChainTlds',
+    inputs: [{ internalType: 'uint256', name: 'chainId', type: 'uint256' }],
+    name: 'getChainInfo',
     outputs: [
       {
-        internalType: 'string[]',
+        components: [
+          { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+          { internalType: 'string', name: 'defaultRpc', type: 'string' },
+          { internalType: 'address', name: 'registry', type: 'address' },
+          { internalType: 'address', name: 'sann', type: 'address' },
+        ],
+        internalType: 'struct VerifiedTldHub.chainInfo',
         name: '',
-        type: 'string[]',
+        type: 'tuple',
       },
     ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'string[]',
-        name: 'tlds',
-        type: 'string[]',
-      },
-    ],
+    inputs: [{ internalType: 'uint256', name: 'chainId', type: 'uint256' }],
+    name: 'getChainTlds',
+    outputs: [{ internalType: 'string[]', name: '', type: 'string[]' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'string[]', name: 'tlds', type: 'string[]' }],
     name: 'getTldInfo',
     outputs: [
       {
         components: [
-          {
-            internalType: 'string',
-            name: 'tld',
-            type: 'string',
-          },
-          {
-            internalType: 'uint256',
-            name: 'identifier',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'chainId',
-            type: 'uint256',
-          },
-          {
-            internalType: 'address',
-            name: 'registry',
-            type: 'address',
-          },
-          {
-            internalType: 'string',
-            name: 'defaultRpc',
-            type: 'string',
-          },
+          { internalType: 'string', name: 'tld', type: 'string' },
+          { internalType: 'uint256', name: 'identifier', type: 'uint256' },
+          { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+          { internalType: 'string', name: 'defaultRpc', type: 'string' },
+          { internalType: 'address', name: 'registry', type: 'address' },
+          { internalType: 'address', name: 'sann', type: 'address' },
         ],
-        internalType: 'struct VerifiedTldHub.TldInfo[]',
+        internalType: 'struct VerifiedTldHub.completeTldInfo[]',
         name: '',
         type: 'tuple[]',
       },
@@ -124,82 +59,64 @@ export const VerifiedTldHubAbi = [
   {
     inputs: [],
     name: 'getTlds',
-    outputs: [
-      {
-        internalType: 'string[]',
-        name: '',
-        type: 'string[]',
-      },
-    ],
+    outputs: [{ internalType: 'string[]', name: '', type: 'string[]' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      {
-        internalType: 'uint256',
-        name: 'chainId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'string',
-        name: 'tld',
-        type: 'string',
-      },
+      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+      { internalType: 'string', name: 'tldName', type: 'string' },
     ],
     name: 'removeTldInfo',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
+  { inputs: [], name: 'renounceOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
   {
-    inputs: [],
-    name: 'renounceOwnership',
+    inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
+    name: 'transferOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
     inputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
+      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+      { internalType: 'string', name: 'defaultRpc', type: 'string' },
+      { internalType: 'address', name: 'registry', type: 'address' },
+      { internalType: 'address', name: 'sann', type: 'address' },
     ],
-    name: 'tlds',
-    outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
+    name: 'updateChainInfo',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
+      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+      { internalType: 'string', name: 'defaultRpc', type: 'string' },
     ],
-    name: 'transferOwnership',
+    name: 'updateDefaultRpc',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'string', name: 'tldName', type: 'string' },
+      { internalType: 'uint256', name: 'identifier', type: 'uint256' },
+      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+    ],
+    name: 'updateTldInfo',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
