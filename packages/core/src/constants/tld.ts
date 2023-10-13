@@ -4,6 +4,7 @@ export enum TLD {
   ARB = 'arb',
   LENS = 'lens',
   CRYPTO = 'crypto',
+  SOL = 'sol',
 }
 
 export const exampleTld = {

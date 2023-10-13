@@ -4,6 +4,7 @@ import { namehash, normalize } from 'viem/ens'
 import { UDResolver } from './UD'
 import { TLD } from './constants/tld'
 import { LensProtocol } from './lens'
+import { SolName } from './tlds/sol'
 import { isV2Tld } from './utils'
 import { ContractReader } from './utils/contract'
 import { tldNamehash } from './utils/namehash'
@@ -35,6 +36,11 @@ export class Web3Name {
     }
 
     try {
+      if (queryTldList?.includes(TLD.SOL)) {
+        const solName = new SolName()
+        return solName.getDomainName({ address })
+      }
+
       // Calculate reverse node and namehash
       const reverseNode = `${address.toLowerCase().slice(2)}.addr.reverse`
       const reverseNamehash = namehash(reverseNode)
@@ -309,4 +315,8 @@ export class Web3Name {
 
 export function createWeb3Name() {
   return new Web3Name()
+}
+
+export function createSolName() {
+  return new SolName()
 }

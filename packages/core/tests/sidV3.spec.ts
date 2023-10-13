@@ -1,19 +1,19 @@
 import chai, { expect } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-import { createWeb3Name } from '../src'
+import { createSolName, createWeb3Name } from '../src'
 
 chai.use(chaiAsPromised)
 
 describe('SID V3 Name resolving', () => {
   it('it should properly resolve domain', async () => {
-    const sid = createWeb3Name()
-    const address = await sid.getAddress('gigic.woaf8')
+    const web3Name = createWeb3Name()
+    const address = await web3Name.getAddress('gigic.woaf8')
     expect(address).to.be.not.null
   }).timeout(10000)
 
   it('it should properly resolve address', async () => {
-    const sid = createWeb3Name()
-    const domain = await sid.getDomainName({
+    const web3Name = createWeb3Name()
+    const domain = await web3Name.getDomainName({
       queryChainIdList: [97],
       address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
     })
@@ -21,9 +21,18 @@ describe('SID V3 Name resolving', () => {
     expect(domain).to.be.not.null
   }).timeout(10000)
   it('it should properly get text record', async () => {
-    const sid = createWeb3Name()
-    const record = await sid.getDomainRecord({ name: 'wagmi-dev.eth', key: 'avatar' })
+    const web3Name = createWeb3Name()
+    const record = await web3Name.getDomainRecord({ name: 'wagmi-dev.eth', key: 'avatar' })
     console.log(record)
     expect(record).to.be.not.null
+  }).timeout(10000)
+
+  it('it should properly resolve address using SNS', async () => {
+    const web3Name = createSolName()
+    const domain = await web3Name.getDomainName({
+      address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
+    })
+    console.log(domain)
+    expect(domain).to.be.eq('bonfida')
   }).timeout(10000)
 })

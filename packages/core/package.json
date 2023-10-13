@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "lint": "prettier --write .",
-    "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts"
+    "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
+    "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
   },
   "author": "",
   "license": "ISC",
@@ -22,9 +23,10 @@
   "peerDependencies": {
     "@adraffy/ens-normalize": "^1.9.2",
     "@ensdomains/ens-validation": "^0.1.0",
-    "ethers": "^5.7.2",
     "lodash": "^4.17.21",
-    "viem": "^1.10.9"
+    "viem": "^1.10.9",
+    "@bonfida/spl-name-service": "^1.4.0",
+    "@solana/web3.js": "^1.87.1"
   },
   "directories": {
     "test": "tests"
@@ -38,10 +40,5 @@
       "default": "./dist/index.mjs"
     }
   },
-  "dependencies": {
-    "@web3-name-sdk/core": "^0.1.0",
-    "ethers": "^5.7.2",
-    "lodash": "^4.17.21",
-    "viem": "^1.10.9"
-  }
+  "dependencies": {}
 }
