@@ -24,9 +24,13 @@
     "@adraffy/ens-normalize": "^1.9.2",
     "@bonfida/spl-name-service": "^1.4.0",
     "@ensdomains/ens-validation": "^0.1.0",
-    "@solana/web3.js": "^1.87.1",
+    "@injectivelabs/networks": "1.14.0-beta.1",
+    "@injectivelabs/sdk-ts": "1.14.0-beta.1",
+    "@injectivelabs/ts-types": "1.14.0-beta.1",
     "@sei-js/core": "^3.1.0",
+    "@siddomains/injective-sidjs": "0.0.2-beta",
     "@siddomains/sei-sidjs": "^0.0.3",
+    "@solana/web3.js": "^1.87.1",
     "lodash": "^4.17.21",
     "viem": "^1.10.9"
   },
@@ -41,6 +45,5 @@
       "types": "./dist/index.d.mts",
       "default": "./dist/index.mjs"
     }
-  },
-  "dependencies": {}
+  }
 }
