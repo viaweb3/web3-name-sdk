@@ -12,5 +12,6 @@ export class SolName {
 
   async getAddress({ name }: { name: string }) {
     const owner = await resolve(this.connection, name)
+    return owner
   }
 }
