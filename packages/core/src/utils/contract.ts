@@ -70,7 +70,6 @@ export class ContractReader {
       abi: SIDRegistryAbi,
       publicClient: client,
     })
-    console.log('reverseNode', namehash(reverseNode))
     const resolverAddr = await registryContract.read.resolver([namehash(reverseNode)])
 
     if (!resolverAddr) {

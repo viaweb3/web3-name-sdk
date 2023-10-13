@@ -21,8 +21,6 @@ export class SeiName {
       const seiId = new SeiID({ client, chainId: 'pacific-1', seiIdAddress: getSeiIDAddress('pacific-1') })
 
       const address = await seiId.name(name).getAddress()
-
-      console.log(address)
       return address
     } catch (error) {
       console.error('Error getting SEI address', error)

@@ -9,7 +9,7 @@
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
   },
-  "author": "",
+  "author": "SPACE ID",
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "^4.3.5",
