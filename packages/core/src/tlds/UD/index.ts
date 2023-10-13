@@ -1,7 +1,7 @@
 import { Address, createPublicClient, getContract, http, namehash } from 'viem'
 import { polygon } from 'viem/chains'
-import { proxyReaderAbi } from '../abi/UD/ProxyReader'
-import { unsRegistryAbi } from '../abi/UD/UNSRegistry'
+import { proxyReaderAbi } from '../../abi/UD/ProxyReader'
+import { unsRegistryAbi } from '../../abi/UD/UNSRegistry'
 
 export class UDResolver {
   private proxyReaderAddress = '0x423F2531bd5d3C3D4EF7C318c2D1d9BEDE67c680' as `0x{string}`
