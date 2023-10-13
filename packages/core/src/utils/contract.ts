@@ -2,20 +2,23 @@ import {
   Address,
   createPublicClient,
   getContract,
+  hexToBigInt,
   hexToNumber,
   http,
+  keccak256,
   namehash,
   type GetContractReturnType,
   type HttpTransport,
   type PublicClient,
-  keccak256,
 } from 'viem'
 import { bscTestnet } from 'viem/chains'
 import { createCustomClient } from '.'
 import { ResolverAbi } from '../abi/Resolver'
 import { ReverseResolverAbi } from '../abi/ReverseResolver'
 import { ReverseResolverV3Abi } from '../abi/ReverserResolverV3'
+import { SANNContractAbi } from '../abi/SANN'
 import { SIDRegistryAbi } from '../abi/SIDRegistry'
+import { TldBaseContractAbi } from '../abi/TldBase'
 import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
 import { CONTRACTS } from '../constants/contracts'
 
@@ -125,31 +128,17 @@ export class ContractReader {
     return resolverContract
   }
 
-  async getTldBaseContract(tldInfo: TldInfo) {
-    const client = createCustomClient(tldInfo)
-
+  async getTldMetadata(domain: string, tldInfo: TldInfo, rpcUrl?: string) {
+    const client = createCustomClient(tldInfo, rpcUrl)
     const sannContract = getContract({
       address: tldInfo.sann,
       abi: SANNContractAbi,
       publicClient: client,
     })
-
-    const tldBaseContract = await sannContract.read.tldBase([BigInt(`${tldInfo.identifier}`)])
-
-    return tldBaseContract
-  }
-
-  async getTldMetadata(domain: string, tldInfo: TldInfo) {
-    const client = createCustomClient(tldInfo)
-    const sannContract = getContract({
-      address: tldInfo.sann,
-      abi: SANNContractAbi,
-      publicClient: client,
-    })
-
+    const tokenId = hexToBigInt(keccak256(Buffer.from(domain.split('.')[0])))
     const tldBaseContractAddr = await sannContract.read.tldBase([BigInt(`${tldInfo.identifier}`)])
     const tldBaseContract = getContract({ address: tldBaseContractAddr, abi: TldBaseContractAbi, publicClient: client })
-    const metadata = await tldBaseContract.read.tokenURI([BigInt(namehash(domain))])
+    const metadata = await tldBaseContract.read.tokenURI([tokenId])
     return metadata
   }
 }

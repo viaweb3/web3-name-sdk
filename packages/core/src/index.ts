@@ -282,16 +282,12 @@ export class Web3Name {
   }
 
   /**
-   * Get domain avatar from name.
+   * Get domain metadata from name.
    *
-   * @param {{ name: string; key: string; rpcUrl?: string }} { name, rpcUrl }
+   * @param {{ name: string; rpcUrl?: string }} { name, rpcUrl }
    * @return {*}
    * @memberof Web3Name
    */
-  async getDomainAvatar({ name, rpcUrl }: { name: string; key: string; rpcUrl?: string }) {
-    return await this.getDomainRecord({ name, key: 'avatar', rpcUrl })
-  }
-
   async getMetadata({ name, rpcUrl }: { name: string; rpcUrl?: string }) {
     const tld = name.split('.').pop()?.toLowerCase()
     if (!tld) {
@@ -303,13 +299,24 @@ export class Web3Name {
         return null
       }
 
-      const metadata = await this.contractReader.getTldMetadata(name, tldInfo[0])
-      return metadata
+      const metadata = await this.contractReader.getTldMetadata(name, tldInfo[0], rpcUrl)
+      const res = await fetch(metadata).then((res) => res.json())
+      return res
     } catch (error) {
       console.error(`Error getting metadata for ${name}`, error)
     }
+  }
 
-    return await this.getDomainRecord({ name, key: 'metadata', rpcUrl })
+  /**
+   * Get domain avatar from name.
+   *
+   * @param {{ name: string; key: string; rpcUrl?: string }} { name, rpcUrl }
+   * @return {*}
+   * @memberof Web3Name
+   */
+  async getDomainAvatar({ name, rpcUrl }: { name: string; key: string; rpcUrl?: string }): Promise<string | undefined> {
+    const metadata = await this.getMetadata({ name, rpcUrl })
+    return metadata?.image
   }
 }
 

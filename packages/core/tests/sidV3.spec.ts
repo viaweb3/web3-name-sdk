@@ -27,12 +27,18 @@ describe('SID V3 Name resolving', () => {
     expect(record).to.be.not.null
   }).timeout(10000)
 
+  it('it should properly resolve metadata', async () => {
+    const web3Name = createWeb3Name()
+    const metadata = await web3Name.getMetadata({ name: 'foryou.kkk1' })
+    console.log(metadata)
+    expect(metadata).to.be.not.null
+  }).timeout(10000)
+
   it('it should properly resolve address using SNS', async () => {
     const web3Name = createSolName()
     const domain = await web3Name.getDomainName({
       address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
     })
-    console.log(domain)
     expect(domain).to.be.eq('bonfida')
   }).timeout(10000)
 })
