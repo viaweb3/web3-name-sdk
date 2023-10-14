@@ -1,6 +1,3 @@
-import { InjName } from './tlds/inj'
-import { SeiName } from './tlds/sei'
-import { SolName } from './tlds/sol'
 import { Web3Name } from './tlds/web3name'
 
 /**
@@ -13,14 +10,17 @@ export function createWeb3Name() {
 /**
  * Creates a new instance of non-EVM based chains
  */
-export function createSolName() {
+export async function createSolName() {
+  const SolName = (await import('./tlds/sol')).SolName
   return new SolName()
 }
 
-export function createSeiName() {
+export async function createSeiName() {
+  const SeiName = (await import('./tlds/sei')).SeiName
   return new SeiName()
 }
 
-export function createInjName() {
+export async function createInjName() {
+  const InjName = (await import('./tlds/inj')).InjName
   return new InjName()
 }

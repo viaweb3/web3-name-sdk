@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@web3-name-sdk/core": "^0.1.0",
+    "@web3-name-sdk/core": "workspace:0.0.1-beta.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "viem": "^1.10.9"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

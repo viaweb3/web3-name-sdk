@@ -1,8 +1,8 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "One stop Web3 domain name resolution",
-  "main": "/dist/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "lint": "prettier --write .",
@@ -10,7 +10,7 @@
     "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
   },
   "author": "SPACE ID",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.3.5",
     "@types/chai-as-promised": "^7.1.5",
@@ -34,16 +34,24 @@
     "lodash": "^4.17.21",
     "viem": "^1.10.9"
   },
-  "directories": {
-    "test": "tests"
-  },
-  "files": [
-    "/dist"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
       "default": "./dist/index.mjs"
     }
-  }
+  },
+  "types": "dist/index.d.ts",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "viem": "^1.10.9",
+    "lodash": "^4.17.21"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "eth"
+  ]
 }
