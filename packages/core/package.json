@@ -1,10 +1,10 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "build": "tsup --format esm,cjs --dts --clean",
     "lint": "prettier --write .",
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
@@ -38,6 +38,18 @@
     ".": {
       "types": "./dist/index.d.mts",
       "default": "./dist/index.mjs"
+    },
+    "./seiName.ts": {
+      "types": "./dist/seiName.d.mts",
+      "default": "./dist/seiName.mjs"
+    },
+    "./injName.ts": {
+      "types": "./dist/injName.d.mts",
+      "default": "./dist/injName.mjs"
+    },
+    "./solName.ts": {
+      "types": "./dist/solName.d.mts",
+      "default": "./dist/solName.mjs"
     }
   },
   "types": "dist/index.d.ts",
@@ -50,6 +62,14 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts",
+      "src/injName.ts",
+      "src/seiName.ts",
+      "src/solName.ts"
+    ]
   },
   "keywords": [
     "eth"
