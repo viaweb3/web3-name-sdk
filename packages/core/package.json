@@ -4,7 +4,7 @@
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup --format esm,cjs --dts --clean",
+    "build": "tsup --format esm --dts --clean",
     "lint": "prettier --write .",
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
@@ -14,10 +14,13 @@
   "devDependencies": {
     "@types/chai": "^4.3.5",
     "@types/chai-as-promised": "^7.1.5",
+    "@types/lodash-es": "^4.17.9",
     "@types/mocha": "^10.0.1",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
+    "lodash-es": "^4.17.21",
     "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
     "tsup": "^7.1.0"
   },
   "peerDependencies": {
@@ -31,7 +34,7 @@
     "@siddomains/injective-sidjs": "0.0.2-beta",
     "@siddomains/sei-sidjs": "^0.0.3",
     "@solana/web3.js": "^1.87.1",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "viem": "^1.10.9"
   },
   "exports": {
@@ -52,13 +55,13 @@
       "default": "./dist/solName.mjs"
     }
   },
+  "type": "module",
   "types": "dist/index.d.ts",
   "directories": {
     "test": "tests"
   },
   "dependencies": {
-    "viem": "^1.10.9",
-    "lodash": "^4.17.21"
+    "viem": "^1.10.9"
   },
   "publishConfig": {
     "access": "public"

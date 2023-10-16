@@ -21,6 +21,7 @@ import { SIDRegistryAbi } from '../abi/SIDRegistry'
 import { TldBaseContractAbi } from '../abi/TldBase'
 import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
 import { CONTRACTS } from '../constants/contracts'
+import { TldInfo } from '../types/tldInfo'
 
 export class ContractReader {
   /** Get verified TLD hub contract */

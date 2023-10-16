@@ -1,4 +1,4 @@
-declare interface TldInfo {
+export interface TldInfo {
   tld: string
   identifier: bigint
   chainId: bigint

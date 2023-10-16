@@ -33,7 +33,6 @@ export class InjName {
         injectiveIdAddress: getInjectiveIDAddress(ChainId.Mainnet),
       })
       const address = await injectiveId.name(name).getAddress()
-      console.log(address)
       return address
     } catch (error) {
       console.error('Error getting SEI address', error)

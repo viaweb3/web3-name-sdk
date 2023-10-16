@@ -1,10 +1,9 @@
 import whitelist from '../constants/whitelist'
 // @ts-ignore
 import { validate as ensValidate } from '@ensdomains/ens-validation'
+import { toArray } from 'lodash-es'
 import { isEncodedLabelhash } from './labels'
 import { normalize } from './namehash'
-// @ts-ignore
-import { toArray } from 'lodash'
 
 export function validateName(name: string) {
   if (!name) {
@@ -17,11 +16,7 @@ export function validateName(name: string) {
     domain = labelArr.slice(0, labelArr.length - 1).join('.')
     suffix = labelArr[labelArr.length - 1]
   }
-  if (
-    labelArr.length === 3 &&
-    suffix.toLowerCase() === 'bnb' &&
-    labelArr[1].toLowerCase() === 'eth'
-  ) {
+  if (labelArr.length === 3 && suffix.toLowerCase() === 'bnb' && labelArr[1].toLowerCase() === 'eth') {
     domain = labelArr[0]
   }
   const hasEmptyLabels = labelArr.filter((e) => e.length < 1).length > 0
@@ -62,8 +57,7 @@ function validateLabelLength(name: string) {
 
 function validateDomains(value: string) {
   const nospecial = /^[^*|\\":<>[\]{}`\\\\()';@&$]+$/u
-  const blackList =
-    /[\u0000-\u002c\u002e-\u002f\u003a-\u005e\u0060\u007b-\u007f\u200b\u200c\u200d\ufeff]/g
+  const blackList = /[\u0000-\u002c\u002e-\u002f\u003a-\u005e\u0060\u007b-\u007f\u200b\u200c\u200d\ufeff]/g
 
   return nospecial.test(value) && !blackList.test(value) && ensValidate(value)
 }

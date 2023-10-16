@@ -1,4 +1,5 @@
 import { PublicClient, createPublicClient, http } from 'viem'
+import { TldInfo } from '../types/tldInfo'
 
 export function createCustomClient(tldInfo: TldInfo, rpcUrl?: string): PublicClient {
   const client = createPublicClient({
