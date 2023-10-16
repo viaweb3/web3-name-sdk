@@ -1,7 +1,8 @@
 import whitelist from '../constants/whitelist'
 // @ts-ignore
 import { validate as ensValidate } from '@ensdomains/ens-validation'
-import { toArray } from 'lodash-es'
+// @ts-ignore
+import { toArray } from 'lodash'
 import { isEncodedLabelhash } from './labels'
 import { normalize } from './namehash'
 
