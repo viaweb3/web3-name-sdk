@@ -1,6 +1,6 @@
 # web3-name-sdk
 
-Web3 Name SDK is an universal web3 identity solution for name resolution. Developers can easily get access to **.eth, .bnb, .arb, .lens, .crypto** names and more.
+Web3 Name SDK is an universal web3 identity solution for domain name resolution. Developers can easily get access to **.eth, .bnb, .arb, .lens, .crypto** names and more.
 
 ## Get Started
 
@@ -8,7 +8,7 @@ Developers can resolve web3 domain name or reverse resolve address with web3 nam
 
 ### Install
 
-`npm install @web3-name-sdk/core`
+`npm install @web3-name-sdk/core viem`
 
 ### Quick Start
 
@@ -67,4 +67,69 @@ Domain text records can be fetched by providing domain name and the key. For exa
 
 ``` typescript
 const record = await sid.getDomainRecord({ name: 'spaceid.bnb', key: 'avatar' })
+```
+
+#### 5. Metadata
+
+Domain metadata can be fetched by SDK directly.
+
+``` typescript
+// Requestgin
+const metadata = await web3Name.getMetadata({ name: 'foryou.kkk1' })
+```
+
+### Non-EVM name services
+
+As an all-in-one domain name SDK, non-EVM web3 domain name services are also included. Now we support SNS (Solana Name Service, .sol), Sei Name Service (.sei) and Injective Name Service (.inj).
+
+#### 1. Solana Name Service (.sol)
+
+Install additional corresponding dependencies for Solana environment:
+
+``` bash
+npm install @solana/web3 @bonfida/spl-name-service
+```
+
+Create client and query domains:
+
+``` typescript
+const web3Name = createSolName()
+const domain = await web3Name.getDomainName({
+  address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
+}) // expect: bonfida
+
+```
+
+#### 2. Sei Name Service (.sei)
+
+Install additional corresponding dependencies for Sei environment:
+
+``` bash
+npm install @sei-js/core @siddomains/sei-sidjs
+```
+
+Create client and query domains:
+
+``` typescript
+const web3Name = createSeiName()
+const domain = await web3Name.getDomainName({
+  address: 'sei1tmew60aj394kdfff0t54lfaelu3p8j8lz93pmf',
+}) // expect: allen.sei
+```
+
+#### 3. Injective Name Service (.inj)
+
+Install additional corresponding dependencies for Injective environment:
+
+``` bash
+npm install @siddomains/injective-sidjs '@injectivelabs/networks' '@injectivelabs/ts-types'
+```
+
+Create client and query domains:
+
+``` typescript
+ const web3Name = createInjName()
+const domain = await web3Name.getDomainName({
+  address: 'inj10zvhv2a2mam8w7lhy96zgg2v8d800xcs7hf2tf',
+}) // expect: testtest.inj
 ```
