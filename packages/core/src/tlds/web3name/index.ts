@@ -65,13 +65,13 @@ export class Web3Name {
         let name = ''
         if (isV2Tld(tld.tld)) {
           const contract = await this.contractReader.getReverseResolverContract(reverseNode, tld)
-          name = await contract.read.name([reverseNamehash])
+          name = (await contract?.read.name([reverseNamehash])) ?? ''
         } else {
           const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld)
-          if (queryChainIdList?.length) {
-            name = await contract.read.name([reverseNamehash])
-          } else {
+          if (queryTldList?.length) {
             name = await contract.read.tldName([reverseNamehash, tld.identifier])
+          } else {
+            name = await contract.read.name([reverseNamehash])
           }
         }
         if (name) {
@@ -208,7 +208,7 @@ export class Web3Name {
         let name = ''
         if (isV2Tld(tld.tld)) {
           const contract = await this.contractReader.getReverseResolverContract(reverseNode, tld)
-          name = await contract.read.name([reverseNamehash])
+          name = (await contract?.read.name([reverseNamehash])) ?? ''
         } else {
           const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld)
           if (queryChainIdList?.length) {

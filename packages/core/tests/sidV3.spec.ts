@@ -57,4 +57,14 @@ describe('SID V3 Name resolving', () => {
     })
     expect(domain).to.be.eq('testtest.inj')
   }).timeout(10000)
+
+  it('it should properly resolve .gno address', async () => {
+    const web3Name = createWeb3Name()
+    const domain = await web3Name.getDomainName({
+      address: '0x8031a6dfc7709066A13DDC22A38bD5a6Fc71EE02',
+      queryChainIdList: [10200],
+    })
+
+    expect(domain).to.be.eq('morning.gno')
+  }).timeout(10000)
 })
