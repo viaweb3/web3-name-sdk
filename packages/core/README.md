@@ -33,6 +33,19 @@ const address = await web3name.getAddress('bts_official.lens')
 
 const address = await web3name.getAddress('beresnev.crypto')
 // expect: '0x6ec0deed30605bcd19342f3c30201db263291589'
+
+const address = await web3name.getAddress('registry.gno')
+// expect: '0x2886D6792503e04b19640C1f1430d23219AF177F'
+```
+
+##### Multichain address resolution
+
+Domain resolution for other chains can be provided by adding `coinType` param to `getAddress()`.
+
+``` typescript
+import { convertEVMChainIdToCoinType } from '@ensdomains/address-encoder'
+const address = await web3name.getAddress('gnome.gno', {coinType: convertEVMChainIdToCoinType(1)})
+// expect: 0x4348d45967552d0176d465170b7375ed22dc627b
 ```
 
 #### 3. Resolve an address
@@ -44,10 +57,10 @@ By providing chain IDs, you can resolve addresses on selected chains and get an 
 ``` typescript
 // Resolve an address from BNB Chain
 const name = await web3name.getDomainName({
-  address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
-  queryChainIdList: [56],
+  address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
+  queryChainIdList: [10200],
 })
-// expect: spaceid.bnb
+// expect: lydia.gno
 ```
 
 By providing TLDs, address can be resolved from the selected TLDs and get an available TLD primary name.
@@ -55,10 +68,10 @@ By providing TLDs, address can be resolved from the selected TLDs and get an ava
 ``` typescript
 // Resolve an address from BNB Chain
 const name = await web3name.getDomainName({
-  address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
-  queryTldList: ['arb'],
+  address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
+  queryTldList: ['gno'],
 })
-// expect: spaceid.arb
+// expect: genome.gno
 ```
 
 #### 4. Record
@@ -74,8 +87,8 @@ const record = await sid.getDomainRecord({ name: 'spaceid.bnb', key: 'avatar' })
 Domain metadata can be fetched by SDK directly.
 
 ``` typescript
-// Requestgin
-const metadata = await web3Name.getMetadata({ name: 'foryou.kkk1' })
+// requesting
+const metadata = await web3Name.getMetadata({ name: 'public.gno' })
 ```
 
 ### Non-EVM name services

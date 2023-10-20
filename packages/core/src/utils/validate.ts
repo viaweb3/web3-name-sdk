@@ -62,3 +62,9 @@ function validateDomains(value: string) {
 
   return nospecial.test(value) && !blackList.test(value) && ensValidate(value)
 }
+
+// Count
+function countCharacters(str: string) {
+  const matches = str.match(/[\u4e00-\u9fa5]|[\uD800-\uDBFF][\uDC00-\uDFFF]|./g)
+  return matches ? matches.length : 0
+}
