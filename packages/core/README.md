@@ -55,7 +55,7 @@ There are optional parameters in the method to select your target chain or TLD (
 By providing chain IDs, you can resolve addresses on selected chains and get an available domain name from all TLDs deployed on these chains.
 
 ``` typescript
-// Resolve an address from BNB Chain
+// Resolve an address from Gnosis Chiado
 const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
   queryChainIdList: [10200],
@@ -66,7 +66,7 @@ const name = await web3name.getDomainName({
 By providing TLDs, address can be resolved from the selected TLDs and get an available TLD primary name.
 
 ``` typescript
-// Resolve an address from BNB Chain
+// Resolve an address from .gno TLD
 const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
   queryTldList: ['gno'],
