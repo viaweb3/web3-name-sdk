@@ -1,5 +1,6 @@
 import { PublicClient, createPublicClient, http } from 'viem'
 import { TldInfo } from '../types/tldInfo'
+import { mainnet, goerli } from 'viem/chains'
 
 export function createCustomClient(tldInfo: TldInfo, rpcUrl?: string): PublicClient {
   const client = createPublicClient({
@@ -26,4 +27,8 @@ export function createCustomClient(tldInfo: TldInfo, rpcUrl?: string): PublicCli
 const v2Tlds = new Set(['bnb', 'arb', 'eth'])
 export function isV2Tld(tld: string) {
   return v2Tlds.has(tld)
+}
+
+export function isEthChain(chainId: number) {
+  return chainId === mainnet.id || chainId === goerli.id
 }

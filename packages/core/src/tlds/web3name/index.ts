@@ -1,13 +1,13 @@
-import { namehash, createPublicClient, http } from 'viem'
+import { createPublicClient, http, namehash } from 'viem'
 import { mainnet } from 'viem/chains'
 import { normalize } from 'viem/ens'
-import { UDResolver } from '../UD'
 import { TLD } from '../../constants/tld'
-import { LensProtocol } from '../lens'
-import { isV2Tld } from '../../utils'
+import { isEthChain, isV2Tld } from '../../utils'
 import { ContractReader } from '../../utils/contract'
 import { tldNamehash } from '../../utils/namehash'
 import { validateName } from '../../utils/validate'
+import { UDResolver } from '../UD'
+import { LensProtocol } from '../lens'
 
 type GetDomainNameProps = {
   queryChainIdList?: number[]
@@ -45,7 +45,16 @@ export class Web3Name {
       const chainTlds: string[] = []
       for (const chainId of queryChainIdList ?? []) {
         const tlds = await hubContract.read.getChainTlds([BigInt(chainId)])
-        chainTlds.push(...tlds)
+
+        if (isEthChain(chainId)) {
+          // Put ENS at the end of the list
+          const ethTld = tlds.filter((e) => e !== TLD.ENS).at(0)
+          if (ethTld) chainTlds.push(ethTld)
+          chainTlds.push(TLD.ENS)
+        } else {
+          const tldName = tlds.at(0)
+          if (tldName) chainTlds.push(tldName)
+        }
       }
 
       const tlds = queryTldList ?? []
@@ -55,7 +64,7 @@ export class Web3Name {
         tlds.push(...allTlds)
       }
 
-      // If queryChainIdList is specified, only fetch TLDs from those chains
+      // Use chain TLDs if queryChainIdList is specified
       const reqTlds = queryChainIdList?.length ? chainTlds : tlds
       const tldInfoList = await this.contractReader.getTldInfo(reqTlds)
 
@@ -63,12 +72,16 @@ export class Web3Name {
       for await (const tld of tldInfoList) {
         if (!tld.tld) continue
         let name = ''
-        if (isV2Tld(tld.tld)) {
+        if (tld.tld === TLD.ENS) {
           const contract = await this.contractReader.getReverseResolverContract(reverseNode, tld)
           name = (await contract?.read.name([reverseNamehash])) ?? ''
         } else {
           const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld)
           if (queryTldList?.length) {
+            if (isV2Tld(tld.tld)) {
+              const containsTldNameFunction = await this.contractReader.containsTldNameFunction(contract.address, tld)
+              if (!containsTldNameFunction) throw 'TLD name is not supported for this TLD'
+            }
             name = await contract.read.tldName([reverseNamehash, tld.identifier])
           } else {
             name = await contract.read.name([reverseNamehash])

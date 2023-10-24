@@ -24,8 +24,8 @@ describe('SID Name resolving', () => {
     const sid = createWeb3Name()
     const domainName = await sid.getDomainName({
       address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
-      queryChainIdList: [56],
-      queryTldList: ['arb'],
+      queryChainIdList: [97],
+      // queryTldList: ['bnb'],
     })
     expect(domainName).to.be.eq('spaceid.bnb')
   }).timeout(10000)

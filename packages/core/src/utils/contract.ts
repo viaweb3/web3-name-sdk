@@ -10,6 +10,7 @@ import {
   type GetContractReturnType,
   type HttpTransport,
   type PublicClient,
+  getFunctionSelector,
 } from 'viem'
 import { bscTestnet } from 'viem/chains'
 import { createCustomClient } from '.'
@@ -38,55 +39,6 @@ export class ContractReader {
     })
 
     return hubContract
-  }
-
-  /** Get reverse resolver contract */
-  async getReverseResolverContract(
-    reverseNode: string,
-    tldInfo: TldInfo,
-    rpcUrl?: string
-  ): Promise<GetContractReturnType<typeof ReverseResolverAbi, PublicClient<HttpTransport>> | undefined> {
-    if (!tldInfo.defaultRpc) return undefined
-    const client = createCustomClient(tldInfo, rpcUrl)
-    const registryContract = getContract({
-      address: tldInfo.registry,
-      abi: SIDRegistryAbi,
-      publicClient: client,
-    })
-    const resolverAddr = await registryContract.read.resolver([namehash(reverseNode)])
-    const resolverContract = getContract({
-      address: resolverAddr ?? '',
-      abi: ReverseResolverAbi,
-      publicClient: client,
-    })
-
-    return resolverContract
-  }
-
-  async getReverseResolverV3Contract(
-    reverseNode: string,
-    tldInfo: TldInfo
-  ): Promise<GetContractReturnType<typeof ReverseResolverV3Abi, PublicClient<HttpTransport>>> {
-    const client = createCustomClient(tldInfo)
-    const registryContract = getContract({
-      address: tldInfo.registry,
-      abi: SIDRegistryAbi,
-      publicClient: client,
-    })
-    const resolverAddr = await registryContract.read.resolver([namehash(reverseNode)])
-
-    if (!resolverAddr) {
-      throw new Error(
-        'Resolver address is null. Please check if the reverse node is registered on the registry contract'
-      )
-    }
-    const resolverContract = getContract({
-      address: resolverAddr,
-      abi: ReverseResolverV3Abi,
-      publicClient: client,
-    })
-
-    return resolverContract
   }
 
   async getTldInfo(tldList: string[]) {
@@ -126,6 +78,28 @@ export class ContractReader {
       abi: ResolverAbi,
       publicClient: client,
     })
+    return resolverContract
+  }
+
+  /** Get reverse resolver contract (V2 only) */
+  async getReverseResolverContract(
+    reverseNode: string,
+    tldInfo: TldInfo,
+    rpcUrl?: string
+  ): Promise<GetContractReturnType<typeof ReverseResolverAbi, PublicClient<HttpTransport>> | undefined> {
+    if (!tldInfo.defaultRpc) return undefined
+    const client = createCustomClient(tldInfo, rpcUrl)
+    const registryContract = getContract({
+      address: tldInfo.registry,
+      abi: SIDRegistryAbi,
+      publicClient: client,
+    })
+    const resolverAddr = await registryContract.read.resolver([namehash(reverseNode)])
+    const resolverContract = getContract({
+      address: resolverAddr ?? '',
+      abi: ReverseResolverAbi,
+      publicClient: client,
+    })
 
     return resolverContract
   }
@@ -142,5 +116,12 @@ export class ContractReader {
     const tldBaseContract = getContract({ address: tldBaseContractAddr, abi: TldBaseContractAbi, publicClient: client })
     const metadata = await tldBaseContract.read.tokenURI([tokenId])
     return metadata
+  }
+
+  async containsTldNameFunction(resolverAddr: Address, tldInfo: TldInfo, rpcUrl?: string): Promise<boolean> {
+    const client = createCustomClient(tldInfo, rpcUrl)
+    const bytecode = await client.getBytecode({ address: resolverAddr })
+    const selector = getFunctionSelector('tldName(bytes32, uint256)')
+    return bytecode?.includes(selector.slice(2)) ?? false
   }
 }
