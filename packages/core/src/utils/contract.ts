@@ -2,6 +2,7 @@ import {
   Address,
   createPublicClient,
   getContract,
+  getFunctionSelector,
   hexToBigInt,
   hexToNumber,
   http,
@@ -10,19 +11,17 @@ import {
   type GetContractReturnType,
   type HttpTransport,
   type PublicClient,
-  getFunctionSelector,
 } from 'viem'
 import { bscTestnet } from 'viem/chains'
-import { createCustomClient } from '.'
 import { ResolverAbi } from '../abi/Resolver'
 import { ReverseResolverAbi } from '../abi/ReverseResolver'
-import { ReverseResolverV3Abi } from '../abi/ReverserResolverV3'
 import { SANNContractAbi } from '../abi/SANN'
 import { SIDRegistryAbi } from '../abi/SIDRegistry'
 import { TldBaseContractAbi } from '../abi/TldBase'
 import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
 import { CONTRACTS } from '../constants/contracts'
 import { TldInfo } from '../types/tldInfo'
+import { createCustomClient } from './common'
 
 export class ContractReader {
   /** Get verified TLD hub contract */

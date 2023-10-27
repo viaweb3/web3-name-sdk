@@ -1,5 +1,5 @@
 import { Address } from 'viem'
 
 export const CONTRACTS = {
-  verifiedTldHub: '0x3665FeCd99FC3C98c6Fd9FCb465cBB0B2171cf0e' as Address,
+  verifiedTldHub: '0xb8114dD1E0bBee79aB9a8E662a4A2CD82d10c59E' as Address,
 }
