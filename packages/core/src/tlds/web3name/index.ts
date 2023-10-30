@@ -35,7 +35,7 @@ export class Web3Name {
 
     try {
       // Calculate reverse node and namehash
-      const reverseNode = `${address.toLowerCase().slice(2)}.addr.reverse`
+      const reverseNode = `${normalize(address).slice(2)}.addr.reverse`
       const reverseNamehash = namehash(reverseNode)
 
       const hubContract = this.contractReader.getVerifiedTldHubContract()
@@ -74,11 +74,7 @@ export class Web3Name {
 
         try {
           if (tld.tld === TLD.ENS) {
-            const contract = await this.contractReader.getReverseResolverContract(
-              reverseNamehash,
-              tld,
-              'https://rpc.sepolia.org'
-            )
+            const contract = await this.contractReader.getReverseResolverContract(reverseNamehash, tld)
             name = (await contract?.read.name([reverseNamehash])) ?? ''
           } else {
             const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld)
