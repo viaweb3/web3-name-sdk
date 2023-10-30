@@ -33,3 +33,17 @@ export function isEthChain(chainId: number) {
   const ethChains = new Set<number>([mainnet.id, goerli.id, sepolia.id])
   return ethChains.has(chainId)
 }
+
+export function getChainFromId(chainId: number) {
+  switch (chainId) {
+    case 1:
+      return mainnet
+    case 5:
+      return goerli
+    case 11155111:
+      return sepolia
+
+    default:
+      return mainnet
+  }
+}

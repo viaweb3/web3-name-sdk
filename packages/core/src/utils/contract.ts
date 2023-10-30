@@ -82,7 +82,7 @@ export class ContractReader {
 
   /** Get reverse resolver contract (V2 only) */
   async getReverseResolverContract(
-    reverseNode: string,
+    reverseNamehash: Address,
     tldInfo: TldInfo,
     rpcUrl?: string
   ): Promise<GetContractReturnType<typeof ReverseResolverAbi, PublicClient<HttpTransport>> | undefined> {
@@ -93,7 +93,7 @@ export class ContractReader {
       abi: SIDRegistryAbi,
       publicClient: client,
     })
-    const resolverAddr = await registryContract.read.resolver([namehash(reverseNode)])
+    const resolverAddr = await registryContract.read.resolver([reverseNamehash])
     const resolverContract = getContract({
       address: resolverAddr ?? '',
       abi: ReverseResolverAbi,

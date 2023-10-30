@@ -7,9 +7,22 @@ chai.use(chaiAsPromised)
 describe('SID Name resolving', () => {
   it('it should properly resolve address', async () => {
     const sid = createWeb3Name()
+    // const domainName = await sid.getAddress('olddomain.eth')
     const domainName = await sid.getDomainName({
-      address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
+      address: '0x6eA65d0E13d4832b3934Abd06b88Bb57aBEFA68b',
+      queryChainIdList: [11155111],
     })
+
+    console.log(domainName)
+    expect(domainName).to.be.eq('spaceid.eth')
+  }).timeout(10000)
+
+  it('it should properly resolve address', async () => {
+    const sid = createWeb3Name()
+
+    const domainName = await sid.getAddress('olddomain.eth')
+
+    console.log(domainName)
     expect(domainName).to.be.eq('spaceid.eth')
   }).timeout(10000)
   it('it should properly resolve .lens address', async () => {
