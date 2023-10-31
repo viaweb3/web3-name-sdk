@@ -195,7 +195,7 @@ export class Web3Name {
       console.warn('queryChainIdList and queryTldList cannot be used together, queryTldList will be ignored')
     }
 
-    const resList: string[] = []
+    const resList: Set<string> = new Set([])
     try {
       // Calculate reverse node and namehash
       const reverseNode = `${address.toLowerCase().slice(2)}.addr.reverse`
@@ -256,21 +256,21 @@ export class Web3Name {
         if (name) {
           const reverseAddress = await this.getAddress(name)
           if (reverseAddress === address) {
-            resList.push(name)
+            resList.add(name)
           }
         }
       }
 
       if (queryTldList?.includes(TLD.LENS)) {
         const lensName = await LensProtocol.getDomainName(address)
-        if (lensName) resList.push(lensName)
+        if (lensName) resList.add(lensName)
       } else if (queryTldList?.includes(TLD.CRYPTO)) {
         const UD = new UDResolver()
         const name = await UD.getName(address)
-        name && resList.push(name)
+        name && resList.add(name)
       }
 
-      return resList
+      return Array.from(resList)
     } catch (e) {
       console.log(`Error getting name for reverse record of ${address}`, e)
       return []

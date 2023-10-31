@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.0.1-beta.13",
+  "version": "0.0.1-beta.14",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {

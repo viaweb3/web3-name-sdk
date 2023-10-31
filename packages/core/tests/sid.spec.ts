@@ -9,8 +9,7 @@ describe('SID Name resolving', () => {
     const sid = createWeb3Name()
     // const domainName = await sid.getAddress('olddomain.eth')
     const domainName = await sid.getDomainName({
-      address: '0x6eA65d0E13d4832b3934Abd06b88Bb57aBEFA68b',
-      queryChainIdList: [11155111],
+      address: '0x5932EC472B0b906c7F7AD6679731EcD9C472B970',
     })
 
     console.log(domainName)
