@@ -7,12 +7,11 @@ import {
   hexToNumber,
   http,
   keccak256,
-  namehash,
   type GetContractReturnType,
   type HttpTransport,
   type PublicClient,
 } from 'viem'
-import { bscTestnet } from 'viem/chains'
+import { mainnet } from 'viem/chains'
 import { ResolverAbi } from '../abi/Resolver'
 import { ReverseResolverAbi } from '../abi/ReverseResolver'
 import { SANNContractAbi } from '../abi/SANN'
@@ -21,20 +20,20 @@ import { TldBaseContractAbi } from '../abi/TldBase'
 import { VerifiedTldHubAbi } from '../abi/VerifiedTldHub'
 import { CONTRACTS } from '../constants/contracts'
 import { TldInfo } from '../types/tldInfo'
-import { createCustomClient } from './common'
+import { createCustomClient, getBaseContractFromChainId } from './common'
 
 export class ContractReader {
   /** Get verified TLD hub contract */
   getVerifiedTldHubContract(): GetContractReturnType<typeof VerifiedTldHubAbi, PublicClient<HttpTransport>> {
-    const bnbClient = createPublicClient({
-      chain: bscTestnet,
+    const ethClient = createPublicClient({
+      chain: mainnet,
       transport: http(),
     })
 
     const hubContract = getContract({
       address: CONTRACTS.verifiedTldHub,
       abi: VerifiedTldHubAbi,
-      publicClient: bnbClient,
+      publicClient: ethClient,
     })
 
     return hubContract
@@ -104,14 +103,24 @@ export class ContractReader {
   }
 
   async getTldMetadata(domain: string, tldInfo: TldInfo, rpcUrl?: string) {
+    const tokenId = hexToBigInt(keccak256(Buffer.from(domain.split('.')[0])))
+
     const client = createCustomClient(tldInfo, rpcUrl)
     const sannContract = getContract({
       address: tldInfo.sann,
       abi: SANNContractAbi,
       publicClient: client,
     })
-    const tokenId = hexToBigInt(keccak256(Buffer.from(domain.split('.')[0])))
-    const tldBaseContractAddr = await sannContract.read.tldBase([BigInt(`${tldInfo.identifier}`)])
+
+    const tldBaseContractAddr =
+      tldInfo.identifier === BigInt(0)
+        ? getBaseContractFromChainId(Number(tldInfo.chainId))
+        : await sannContract.read.tldBase([BigInt(`${tldInfo.identifier}`)])
+
+    if (tldInfo.chainId === BigInt(mainnet.id)) {
+      return `https://metadata.ens.domains/mainnet/${tldBaseContractAddr}/${tokenId}`
+    }
+
     const tldBaseContract = getContract({ address: tldBaseContractAddr, abi: TldBaseContractAbi, publicClient: client })
     const metadata = await tldBaseContract.read.tokenURI([tokenId])
     return metadata

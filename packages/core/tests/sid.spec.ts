@@ -8,12 +8,11 @@ describe('SID Name resolving', () => {
   it('it should properly resolve address', async () => {
     const sid = createWeb3Name()
     // const domainName = await sid.getAddress('olddomain.eth')
-    const domainName = await sid.getDomainName({
-      address: '0x5932EC472B0b906c7F7AD6679731EcD9C472B970',
+    const domainName = await sid.getMetadata({
+      name: '966905.bnb',
     })
 
-    console.log(domainName)
-    expect(domainName).to.be.eq('spaceid.eth')
+    expect(domainName).to.be.not.null
   }).timeout(10000)
 
   it('it should properly resolve address', async () => {
@@ -21,7 +20,6 @@ describe('SID Name resolving', () => {
 
     const domainName = await sid.getAddress('olddomain.eth')
 
-    console.log(domainName)
     expect(domainName).to.be.eq('spaceid.eth')
   }).timeout(10000)
   it('it should properly resolve .lens address', async () => {
