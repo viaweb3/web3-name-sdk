@@ -11,7 +11,7 @@ import {
   type HttpTransport,
   type PublicClient,
 } from 'viem'
-import { mainnet } from 'viem/chains'
+import { bscTestnet, mainnet } from 'viem/chains'
 import { ResolverAbi } from '../abi/Resolver'
 import { ReverseResolverAbi } from '../abi/ReverseResolver'
 import { SANNContractAbi } from '../abi/SANN'
@@ -23,15 +23,21 @@ import { TldInfo } from '../types/tldInfo'
 import { createCustomClient, getBaseContractFromChainId } from './common'
 
 export class ContractReader {
+  private isDev: boolean
+
+  constructor(isDev: boolean) {
+    this.isDev = isDev
+  }
+
   /** Get verified TLD hub contract */
   getVerifiedTldHubContract(): GetContractReturnType<typeof VerifiedTldHubAbi, PublicClient<HttpTransport>> {
     const ethClient = createPublicClient({
-      chain: mainnet,
+      chain: this.isDev ? bscTestnet : mainnet,
       transport: http(),
     })
 
     const hubContract = getContract({
-      address: CONTRACTS.verifiedTldHub,
+      address: this.isDev ? CONTRACTS.verifiedTldHubTest : CONTRACTS.verifiedTldHub,
       abi: VerifiedTldHubAbi,
       publicClient: ethClient,
     })

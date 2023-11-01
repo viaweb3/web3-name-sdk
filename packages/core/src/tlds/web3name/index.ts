@@ -15,7 +15,11 @@ type GetDomainNameProps = {
 }
 
 export class Web3Name {
-  private contractReader = new ContractReader()
+  private contractReader: ContractReader
+
+  constructor({ isDev = false }: { isDev?: boolean }) {
+    this.contractReader = new ContractReader(isDev)
+  }
 
   /**
    * Get domain name from address.

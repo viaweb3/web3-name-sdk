@@ -7,7 +7,7 @@ chai.use(chaiAsPromised)
 describe('SID Name resolving', () => {
   it('it should properly resolve address', async () => {
     const sid = createWeb3Name()
-    // const domainName = await sid.getAddress('olddomain.eth')
+
     const domainName = await sid.getMetadata({
       name: '966905.bnb',
     })
