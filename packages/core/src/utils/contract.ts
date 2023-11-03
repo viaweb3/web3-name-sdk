@@ -33,7 +33,7 @@ export class ContractReader {
   getVerifiedTldHubContract(): GetContractReturnType<typeof VerifiedTldHubAbi, PublicClient<HttpTransport>> {
     const ethClient = createPublicClient({
       chain: this.isDev ? bscTestnet : mainnet,
-      transport: http(),
+      transport: http(this.isDev ? undefined : 'https://rpc.ankr.com/eth'),
     })
 
     const hubContract = getContract({
