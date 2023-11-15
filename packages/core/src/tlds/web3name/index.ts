@@ -12,6 +12,7 @@ type GetDomainNameProps = {
   queryChainIdList?: number[]
   queryTldList?: string[]
   address: string
+  rpcUrl?: string
 }
 
 export class Web3Name {
@@ -32,7 +33,7 @@ export class Web3Name {
    * @return {*}  {(Promise<string | null>)}
    * @memberof Web3Name
    */
-  async getDomainName({ address, queryChainIdList, queryTldList }: GetDomainNameProps): Promise<string | null> {
+  async getDomainName({ address, queryChainIdList, queryTldList, rpcUrl }: GetDomainNameProps): Promise<string | null> {
     if (queryChainIdList?.length && queryTldList?.length) {
       console.warn('queryChainIdList and queryTldList cannot be used together, queryTldList will be ignored')
     }
@@ -78,13 +79,17 @@ export class Web3Name {
 
         try {
           if (tld.tld === TLD.ENS) {
-            const contract = await this.contractReader.getReverseResolverContract(reverseNamehash, tld)
+            const contract = await this.contractReader.getReverseResolverContract(reverseNamehash, tld, rpcUrl)
             name = (await contract?.read.name([reverseNamehash])) ?? ''
           } else {
-            const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld)
+            const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld, rpcUrl)
             if (queryTldList?.length) {
               if (isV2Tld(tld.tld)) {
-                const containsTldNameFunction = await this.contractReader.containsTldNameFunction(contract.address, tld)
+                const containsTldNameFunction = await this.contractReader.containsTldNameFunction(
+                  contract.address,
+                  tld,
+                  rpcUrl
+                )
                 if (!containsTldNameFunction) throw 'TLD name is not supported for this TLD'
               }
               name = await contract.read.tldName([reverseNamehash, tld.identifier])

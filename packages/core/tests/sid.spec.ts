@@ -71,4 +71,36 @@ describe('SID Name resolving', () => {
     const sid = createWeb3Name()
     expect(sid.getAddress('xz.bnb')).to.rejectedWith(Error)
   })
+
+  it('it should properly resolve address with custom RPC', async () => {
+    const sid = createWeb3Name()
+
+    const domainName = await sid.getAddress('registry.arb', {
+      rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    })
+
+    expect(domainName).to.be.not.null
+  }).timeout(10000)
+
+  it('it should properly fetch metadata with custom RPC', async () => {
+    const sid = createWeb3Name()
+
+    const domainName = await sid.getMetadata({
+      name: 'registry.arb',
+      rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    })
+
+    expect(domainName).to.be.not.null
+  }).timeout(10000)
+
+  it('it should properly resolve address with custom RPC', async () => {
+    const sid = createWeb3Name()
+
+    const domainName = await sid.getDomainName({
+      address: '0x8d27d6235d9d8EFc9Eef0505e745dB67D5cD2918',
+      rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    })
+
+    expect(domainName).to.be.not.null
+  }).timeout(10000)
 })

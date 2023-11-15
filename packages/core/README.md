@@ -146,3 +146,27 @@ const domain = await web3Name.getDomainName({
   address: 'inj10zvhv2a2mam8w7lhy96zgg2v8d800xcs7hf2tf',
 }) // expect: testtest.inj
 ```
+
+### Use your own RPC
+
+We are using popular public RPC services by default to make it easier to use. But in some cases developers may prefer to use arbitrary RPC, so we provide optional parameter `rpcUrl` for each function that allows developers to use their own RPC to make requests.
+
+For example, you can put custom rpcUrl as a parameter in `getAddress` function.
+
+```typescript
+// Use custom RPC url (https://arb1.arbitrum.io/rpc)
+const address = await web3name.getAddress('registry.arb', {
+  rpcUrl: 'https://arb1.arbitrum.io/rpc',
+})
+// expect: '0x8d27d6235d9d8EFc9Eef0505e745dB67D5cD2918'
+```
+
+For other functions, it's also possible to have a custom `rpcUrl` in the request.
+
+```typescript
+// Use custom RPC url (https://arb1.arbitrum.io/rpc)
+const address = await web3name.getMetaData('registry.arb', {
+  rpcUrl: 'https://arb1.arbitrum.io/rpc',
+})
+// expect: '0x8d27d6235d9d8EFc9Eef0505e745dB67D5cD2918'
+```
