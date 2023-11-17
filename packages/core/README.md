@@ -105,12 +105,13 @@ npm install @solana/web3 @bonfida/spl-name-service
 
 Create client and query domains:
 
-``` typescript
+```typescript
+import { createSolName } from '@web3-name-sdk/core/solName'
+
 const web3Name = createSolName()
 const domain = await web3Name.getDomainName({
   address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
 }) // expect: bonfida
-
 ```
 
 #### 2. Sei Name Service (.sei)
@@ -124,6 +125,8 @@ npm install @sei-js/core @siddomains/sei-sidjs
 Create client and query domains:
 
 ``` typescript
+import { createSeiName } from '@web3-name-sdk/core/seiName'
+
 const web3Name = createSeiName()
 const domain = await web3Name.getDomainName({
   address: 'sei1tmew60aj394kdfff0t54lfaelu3p8j8lz93pmf',
@@ -141,7 +144,9 @@ npm install @siddomains/injective-sidjs '@injectivelabs/networks' '@injectivelab
 Create client and query domains:
 
 ``` typescript
- const web3Name = createInjName()
+import { createInjName } from '@web3-name-sdk/core/injName'
+
+const web3Name = createInjName()
 const domain = await web3Name.getDomainName({
   address: 'inj10zvhv2a2mam8w7lhy96zgg2v8d800xcs7hf2tf',
 }) // expect: testtest.inj

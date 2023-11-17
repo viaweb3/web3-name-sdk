@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {
@@ -38,17 +38,21 @@
       "types": "./dist/index.d.mts",
       "default": "./dist/index.mjs"
     },
-    "./seiName.ts": {
+    "./seiName": {
       "types": "./dist/seiName.d.mts",
       "default": "./dist/seiName.mjs"
     },
-    "./injName.ts": {
+    "./injName": {
       "types": "./dist/injName.d.mts",
       "default": "./dist/injName.mjs"
     },
-    "./solName.ts": {
+    "./solName": {
       "types": "./dist/solName.d.mts",
       "default": "./dist/solName.mjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.mts",
+      "default": "./dist/utils/index.mjs"
     }
   },
   "types": "dist/index.d.ts",
