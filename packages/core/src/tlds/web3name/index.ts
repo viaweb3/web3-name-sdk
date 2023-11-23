@@ -103,7 +103,7 @@ export class Web3Name {
         }
 
         if (name) {
-          const reverseAddress = await this.getAddress(name)
+          const reverseAddress = await this.getAddress(name, { rpcUrl })
           if (reverseAddress?.toLowerCase() === address.toLowerCase()) {
             resList.push(name)
             break
@@ -199,7 +199,7 @@ export class Web3Name {
    * @return {*}  {Promise<string[]>}
    * @memberof Web3Name
    */
-  async getDomainNames({ address, queryChainIdList, queryTldList }: GetDomainNameProps): Promise<string[]> {
+  async getDomainNames({ address, queryChainIdList, queryTldList, rpcUrl }: GetDomainNameProps): Promise<string[]> {
     if (queryChainIdList?.length && queryTldList?.length) {
       console.warn('queryChainIdList and queryTldList cannot be used together, queryTldList will be ignored')
     }
@@ -244,7 +244,7 @@ export class Web3Name {
         let name = ''
         try {
           if (tld.tld === TLD.ENS) {
-            const contract = await this.contractReader.getReverseResolverContract(reverseNamehash, tld)
+            const contract = await this.contractReader.getReverseResolverContract(reverseNamehash, tld, rpcUrl)
             name = (await contract?.read.name([reverseNamehash])) ?? ''
           } else {
             const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld)
@@ -263,7 +263,7 @@ export class Web3Name {
         }
 
         if (name) {
-          const reverseAddress = await this.getAddress(name)
+          const reverseAddress = await this.getAddress(name, { rpcUrl })
           if (reverseAddress === address) {
             resList.add(name)
           }

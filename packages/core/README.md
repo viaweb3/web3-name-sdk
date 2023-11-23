@@ -10,6 +10,15 @@ Developers can resolve web3 domain name or reverse resolve address with web3 nam
 
 `npm install @web3-name-sdk/core viem`
 
+If you are using `next.js`, please add the following configuration in your `next.config.js` in order to transpile commonjs dependencies:
+
+``` typescript
+const nextConfig = {
+  transpilePackages: ['@web3-name-sdk/core'],
+}
+```
+
+
 ### Quick Start
 
 #### 1. Setup client
