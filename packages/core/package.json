@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {
@@ -24,9 +24,6 @@
   },
   "peerDependencies": {
     "@bonfida/spl-name-service": "^1.4.0",
-    "@injectivelabs/networks": "1.14.0-beta.1",
-    "@injectivelabs/sdk-ts": "1.14.0-beta.1",
-    "@injectivelabs/ts-types": "1.14.0-beta.1",
     "@sei-js/core": "^3.1.0",
     "@siddomains/injective-sidjs": "0.0.2-beta",
     "@siddomains/sei-sidjs": "^0.0.3",

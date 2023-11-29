@@ -1,6 +1,6 @@
 # web3-name-sdk
 
-Web3 Name SDK is an universal web3 identity solution for name resolution. Developers can easily get access to **.eth, .bnb, .arb, .lens, .crypto** names and more.
+Web3 Name SDK is an universal web3 identity solution for domain name resolution. Developers can easily get access to **.eth, .bnb, .arb, .lens, .crypto** names and more.
 
 ## Get Started
 
@@ -8,7 +8,15 @@ Developers can resolve web3 domain name or reverse resolve address with web3 nam
 
 ### Install
 
-`npm install @web3-name-sdk/core`
+`npm install @web3-name-sdk/core viem`
+
+If you are using `next.js`, please add the following configuration in your `next.config.js` in order to transpile commonjs dependencies:
+
+``` typescript
+const nextConfig = {
+  transpilePackages: ['@web3-name-sdk/core'],
+}
+```
 
 ### Quick Start
 
@@ -33,6 +41,19 @@ const address = await web3name.getAddress('bts_official.lens')
 
 const address = await web3name.getAddress('beresnev.crypto')
 // expect: '0x6ec0deed30605bcd19342f3c30201db263291589'
+
+const address = await web3name.getAddress('registry.gno')
+// expect: '0x2886D6792503e04b19640C1f1430d23219AF177F'
+```
+
+##### Multichain address resolution
+
+Domain resolution for other chains can be provided by adding `coinType` param to `getAddress()`.
+
+``` typescript
+import { convertEVMChainIdToCoinType } from '@ensdomains/address-encoder'
+const address = await web3name.getAddress('gnome.gno', {coinType: convertEVMChainIdToCoinType(1)})
+// expect: 0x4348d45967552d0176d465170b7375ed22dc627b
 ```
 
 #### 3. Resolve an address
@@ -42,23 +63,23 @@ There are optional parameters in the method to select your target chain or TLD (
 By providing chain IDs, you can resolve addresses on selected chains and get an available domain name from all TLDs deployed on these chains.
 
 ``` typescript
-// Resolve an address from BNB Chain
+// Resolve an address from Gnosis Chiado
 const name = await web3name.getDomainName({
-  address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
-  queryChainIdList: [56],
+  address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
+  queryChainIdList: [10200],
 })
-// expect: spaceid.bnb
+// expect: lydia.gno
 ```
 
 By providing TLDs, address can be resolved from the selected TLDs and get an available TLD primary name.
 
 ``` typescript
-// Resolve an address from BNB Chain
+// Resolve an address from .gno TLD
 const name = await web3name.getDomainName({
-  address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
-  queryTldList: ['arb'],
+  address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
+  queryTldList: ['gno'],
 })
-// expect: spaceid.arb
+// expect: genome.gno
 ```
 
 #### 4. Record
@@ -67,4 +88,98 @@ Domain text records can be fetched by providing domain name and the key. For exa
 
 ``` typescript
 const record = await sid.getDomainRecord({ name: 'spaceid.bnb', key: 'avatar' })
+```
+
+#### 5. Metadata
+
+Domain metadata can be fetched by SDK directly.
+
+``` typescript
+// requesting
+const metadata = await web3Name.getMetadata({ name: 'public.gno' })
+```
+
+### Non-EVM name services
+
+As an all-in-one domain name SDK, non-EVM web3 domain name services are also included. Now we support SNS (Solana Name Service, .sol), Sei Name Service (.sei) and Injective Name Service (.inj).
+
+#### 1. Solana Name Service (.sol)
+
+Install additional corresponding dependencies for Solana environment:
+
+``` bash
+npm install @solana/web3 @bonfida/spl-name-service
+```
+
+Create client and query domains:
+
+```typescript
+import { createSolName } from '@web3-name-sdk/core/solName'
+
+const web3Name = createSolName()
+const domain = await web3Name.getDomainName({
+  address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
+}) // expect: bonfida
+```
+
+#### 2. Sei Name Service (.sei)
+
+Install additional corresponding dependencies for Sei environment:
+
+``` bash
+npm install @sei-js/core @siddomains/sei-sidjs
+```
+
+Create client and query domains:
+
+``` typescript
+import { createSeiName } from '@web3-name-sdk/core/seiName'
+
+const web3Name = createSeiName()
+const domain = await web3Name.getDomainName({
+  address: 'sei1tmew60aj394kdfff0t54lfaelu3p8j8lz93pmf',
+}) // expect: allen.sei
+```
+
+#### 3. Injective Name Service (.inj)
+
+Install additional corresponding dependencies for Injective environment:
+
+``` bash
+npm install @siddomains/injective-sidjs '@injectivelabs/networks' '@injectivelabs/ts-types'
+```
+
+Create client and query domains:
+
+``` typescript
+import { createInjName } from '@web3-name-sdk/core/injName'
+
+const web3Name = createInjName()
+const domain = await web3Name.getDomainName({
+  address: 'inj10zvhv2a2mam8w7lhy96zgg2v8d800xcs7hf2tf',
+}) // expect: testtest.inj
+```
+
+### Use your own RPC
+
+We are using popular public RPC services by default to make it easier to use. But in some cases developers may prefer to use arbitrary RPC, so we provide optional parameter `rpcUrl` for each function that allows developers to use their own RPC to make requests.
+
+For example, you can put custom rpcUrl as a parameter in `getAddress` function.
+
+```typescript
+// Use custom RPC url (https://arb1.arbitrum.io/rpc)
+const address = await web3name.getAddress('registry.arb', {
+  rpcUrl: 'https://arb1.arbitrum.io/rpc',
+})
+// expect: '0x8d27d6235d9d8EFc9Eef0505e745dB67D5cD2918'
+```
+
+For other functions, it's also possible to have a custom `rpcUrl` in the request.
+
+```typescript
+// Use custom RPC url (https://arb1.arbitrum.io/rpc)
+const address = await web3name.getMetaData('registry.arb', {
+  rpcUrl: 'https://arb1.arbitrum.io/rpc',
+})
+// expect: '0x8d27d6235d9d8EFc9Eef0505e745dB67D5cD2918'
 ```
