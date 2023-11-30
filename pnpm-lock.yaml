@@ -42,7 +42,7 @@ importers:
         specifier: ^0.0.3
         version: 0.0.3(@sei-js/core@3.1.0)
       '@solana/web3.js':
-        specifier: ^1.87.1
+        specifier: ^1.75.0
         version: 1.87.1
       viem:
         specifier: ^1.10.9

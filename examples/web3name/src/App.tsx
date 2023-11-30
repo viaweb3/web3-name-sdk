@@ -1,5 +1,7 @@
 import { createWeb3Name } from '@web3-name-sdk/core'
 import { createSeiName } from '@web3-name-sdk/core/seiName'
+import { createInjName } from '@web3-name-sdk/core/injName'
+import { createSolName } from '@web3-name-sdk/core/solName'
 import { useEffect, useState } from 'react'
 import './App.css'
 import reactLogo from './assets/react.svg'
@@ -16,6 +18,15 @@ function App() {
     const seiName = createSeiName()
     seiName.getAddress({ name: 'allen.sei' }).then((e) => {
       console.log('seiName', e)
+    })
+
+    const inj = createInjName()
+    inj.getAddress({ name: 'allen.inj' }).then((e) => {
+      console.log('inj', e)
+    })
+    const sol = createSolName()
+    sol.getAddress({ name: 'allen.sol' }).then((e) => {
+      console.log('sol', e)
     })
   }, [])
   return (
