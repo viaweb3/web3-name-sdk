@@ -39,8 +39,8 @@ importers:
         specifier: 0.0.2-beta
         version: 0.0.2-beta(@injectivelabs/sdk-ts@1.14.4)(@injectivelabs/ts-types@1.14.4)
       '@siddomains/sei-sidjs':
-        specifier: ^0.0.3
-        version: 0.0.3(@sei-js/core@3.1.0)
+        specifier: ^0.0.4
+        version: 0.0.4(@sei-js/core@3.1.0)
       '@solana/web3.js':
         specifier: ^1.75.0
         version: 1.87.1
@@ -1787,12 +1787,12 @@ packages:
       lodash.toarray: 4.4.0
     dev: false
 
-  /@siddomains/sei-sidjs@0.0.3(@sei-js/core@3.1.0):
-    resolution: {integrity: sha512-D1qX9O5RMmMX+BOdQ5kRAJfLtHMHQQ2Ou3g2Mg+Qokh35Z7+7hkKKE3EGLoZiDsVl3I2TubQdfi0dzosoCP88A==}
+  /@siddomains/sei-sidjs@0.0.4(@sei-js/core@3.1.0):
+    resolution: {integrity: sha512-9Ao2clDg88/Sc3n607wtoU2pQ38DsovndMk36LJrQwvZQvbpzk/6guOP3ojK5PcE5ZCmqDRhIc/7PmO7HACRhQ==}
     peerDependencies:
       '@sei-js/core': ^3.0.1
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.4
       '@ensdomains/ens-validation': 0.1.0
       '@ensdomains/eth-ens-namehash': 2.0.15
       '@sei-js/core': 3.1.0

@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "@bonfida/spl-name-service": "^1.4.0",
     "@sei-js/core": "^3.1.0",
     "@siddomains/injective-sidjs": "0.0.2-beta",
-    "@siddomains/sei-sidjs": "^0.0.3",
+    "@siddomains/sei-sidjs": "^0.0.4",
     "@solana/web3.js": "^1.75.0",
     "lodash": "^4.17.21"
   },
