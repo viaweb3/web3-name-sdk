@@ -5,6 +5,7 @@ import { validate as ensValidate } from '@ensdomains/ens-validation'
 import { toArray } from 'lodash'
 import { isEncodedLabelhash } from './labels'
 import { normalize } from './namehash'
+import { isV2Tld } from './common'
 
 export function validateName(name: string) {
   if (!name) {
@@ -22,7 +23,8 @@ export function validateName(name: string) {
   }
   const hasEmptyLabels = labelArr.filter((e) => e.length < 1).length > 0
   if (hasEmptyLabels) throw new Error('Domain cannot have empty labels')
-  if (!validateLabelLength(domain) && !whitelist.includes(name.toLowerCase())) {
+
+  if (!validateLabelLength(domain, !isV2Tld(suffix)) && !whitelist.includes(name.toLowerCase())) {
     throw new Error('Invalid name')
   }
   if (!validateDomains(domain)) throw new Error('Invalid name')
@@ -36,12 +38,12 @@ export function validateName(name: string) {
   }
 }
 
-function validateLabelLength(name: string) {
+function validateLabelLength(name: string, allowShortLabel = false) {
   if (!name) {
     return false
   }
   const len = toArray(name).length
-  if (len > 512) {
+  if (len > 512 || (!allowShortLabel && len < 3)) {
     return false
   }
   let normalizedValue
@@ -50,7 +52,7 @@ function validateLabelLength(name: string) {
   } catch (e) {
     normalizedValue = name
   }
-  if (normalizedValue.length < 3 || normalizedValue.length > 512) {
+  if (normalizedValue.length > 512 || (!allowShortLabel && len < 3)) {
     return false
   }
   return true

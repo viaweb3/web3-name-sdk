@@ -1,10 +1,22 @@
 import chai, { expect } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import { createWeb3Name } from '../src'
+import { validateName } from '../src/utils'
 
 chai.use(chaiAsPromised)
 
 describe('SID Name resolving', () => {
+  it('it should properly validate', async () => {
+    // const validate = validateName('1.zeta')
+    const validate2 = validateName('1.bnb')
+    expect(validate2).to.be.null
+  })
+
+  it('it should properly validate', async () => {
+    const validate = validateName('1.zeta')
+    expect(validate).to.be.eq('1.zeta')
+  })
+
   it('it should properly resolve address', async () => {
     const sid = createWeb3Name()
 

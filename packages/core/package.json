@@ -1,10 +1,10 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup --format esm,cjs --dts --clean",
+    "build": "tsup --format esm --dts --clean",
     "lint": "prettier --write .",
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
