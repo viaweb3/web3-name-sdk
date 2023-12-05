@@ -41,7 +41,7 @@ function validateLabelLength(name: string) {
     return false
   }
   const len = toArray(name).length
-  if (len < 3 || len > 512) {
+  if (len > 512) {
     return false
   }
   let normalizedValue
