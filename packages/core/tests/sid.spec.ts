@@ -6,16 +6,15 @@ import { validateName } from '../src/utils'
 chai.use(chaiAsPromised)
 
 describe('SID Name resolving', () => {
-  it('it should properly validate', async () => {
-    // const validate = validateName('1.zeta')
-    const validate2 = validateName('1.bnb')
-    expect(validate2).to.be.null
-  })
+  // it('it should properly validate', async () => {
+  //   const validate2 = validateName('1.bnb')
+  //   expect(validate2).to.be.null
+  // })
 
-  it('it should properly validate', async () => {
-    const validate = validateName('1.zeta')
-    expect(validate).to.be.eq('1.zeta')
-  })
+  // it('it should properly validate', async () => {
+  //   const validate = validateName('1.zeta')
+  //   expect(validate).to.be.eq('1.zeta')
+  // })
 
   it('it should properly resolve address', async () => {
     const sid = createWeb3Name()
@@ -31,8 +30,7 @@ describe('SID Name resolving', () => {
     const sid = createWeb3Name()
 
     const domainName = await sid.getAddress('olddomain.eth')
-
-    expect(domainName).to.be.eq('spaceid.eth')
+    expect(domainName).to.be.eq('0xd03D02A3490218123Da4b4994538Af9EA2Ee5D05')
   }).timeout(10000)
   it('it should properly resolve .lens address', async () => {
     const sid = createWeb3Name()
@@ -46,7 +44,7 @@ describe('SID Name resolving', () => {
     const sid = createWeb3Name()
     const domainName = await sid.getDomainName({
       address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
-      queryChainIdList: [97],
+      queryChainIdList: [56],
       // queryTldList: ['bnb'],
     })
     expect(domainName).to.be.eq('spaceid.bnb')

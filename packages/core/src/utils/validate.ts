@@ -1,11 +1,10 @@
 import whitelist from '../constants/whitelist'
+import { ens_normalize } from '@adraffy/ens-normalize'
 // @ts-ignore
 import { validate as ensValidate } from '@ensdomains/ens-validation'
-// @ts-ignore
-import { toArray } from 'lodash'
+import { isV2Tld } from './common'
 import { isEncodedLabelhash } from './labels'
 import { normalize } from './namehash'
-import { isV2Tld } from './common'
 
 export function validateName(name: string) {
   if (!name) {
@@ -42,7 +41,7 @@ function validateLabelLength(name: string, allowShortLabel = false) {
   if (!name) {
     return false
   }
-  const len = toArray(name).length
+  const len = countCharacters(name)
   if (len > 512 || (!allowShortLabel && len < 3)) {
     return false
   }
@@ -65,8 +64,14 @@ function validateDomains(value: string) {
   return nospecial.test(value) && !blackList.test(value) && ensValidate(value)
 }
 
-// Count
-function countCharacters(str: string) {
-  const matches = str.match(/[\u4e00-\u9fa5]|[\uD800-\uDBFF][\uDC00-\uDFFF]|./g)
+/**
+ * Count the number of characters in a string.
+ * @param str The string to count characters.
+ * @returns The number of characters in the string.
+ */
+export function countCharacters(str: string): number {
+  const normalizedStr = ens_normalize(str)
+  const regex = /[\u0000-\uffff]|\p{L}|\p{Emoji}(?!\p{M})/gu
+  const matches = normalizedStr.match(regex)
   return matches ? matches.length : 0
 }
