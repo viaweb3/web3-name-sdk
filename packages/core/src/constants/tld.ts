@@ -1,3 +1,7 @@
+/**
+ * Important: TLD is only used for none-Toolkit TLDs.
+ * Toolkit TLDs (manta, mode, zkf, etc.) are resolved by the Toolkit contract
+ */
 export enum TLD {
   ENS = 'eth',
   BNB = 'bnb',

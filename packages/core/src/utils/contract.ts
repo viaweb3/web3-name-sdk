@@ -132,10 +132,40 @@ export class ContractReader {
     return metadata
   }
 
+  // Read content hash from resolver contract
+  async getContenthash(namehash: Address, tldInfo: TldInfo, rpcUrl?: string) {
+    const resolver = await this.getResolverContractByTld(namehash, tldInfo, rpcUrl)
+    const functionExists = await this.resolverFunctionExists(resolver.address, 'contenthash(bytes32)', tldInfo, rpcUrl)
+    if (!functionExists) return undefined
+    const contentHash = await resolver.read.contenthash([namehash])
+    return contentHash
+  }
+
+  // Read content hash from resolver contract
+  async getABI(namehash: Address, tldInfo: TldInfo, rpcUrl?: string) {
+    const resolver = await this.getResolverContractByTld(namehash, tldInfo, rpcUrl)
+    const functionExists = await this.resolverFunctionExists(resolver.address, 'ABI(bytes32, uint256)', tldInfo, rpcUrl)
+    if (!functionExists) return undefined
+    const contentHash = await resolver.read.ABI([namehash, BigInt(1)])
+    return contentHash
+  }
+
   async containsTldNameFunction(resolverAddr: Address, tldInfo: TldInfo, rpcUrl?: string): Promise<boolean> {
     const client = createCustomClient(tldInfo, rpcUrl)
     const bytecode = await client.getBytecode({ address: resolverAddr })
     const selector = getFunctionSelector('tldName(bytes32, uint256)')
+    return bytecode?.includes(selector.slice(2)) ?? false
+  }
+
+  async resolverFunctionExists(
+    resolverAddr: Address,
+    functionName: string,
+    tldInfo: TldInfo,
+    rpcUrl?: string
+  ): Promise<boolean> {
+    const client = createCustomClient(tldInfo, rpcUrl)
+    const bytecode = await client.getBytecode({ address: resolverAddr })
+    const selector = getFunctionSelector(functionName)
     return bytecode?.includes(selector.slice(2)) ?? false
   }
 }

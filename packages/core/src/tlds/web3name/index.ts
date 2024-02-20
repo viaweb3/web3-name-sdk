@@ -356,4 +356,52 @@ export class Web3Name {
     const metadata = await this.getMetadata({ name, rpcUrl })
     return metadata?.image
   }
+
+  /**
+   * Get domain content hash from name.
+   *
+   * @param {{ name: string; rpcUrl?: string }} { name, rpcUrl }
+   * @return {*}  {(Promise<string | undefined>)}
+   * @memberof Web3Name
+   */
+  async getContentHash({ name, rpcUrl }: { name: string; rpcUrl?: string }): Promise<string | undefined> {
+    const tld = name.split('.').pop()?.toLowerCase()
+    if (!tld) {
+      return undefined
+    }
+    try {
+      const tldInfo = (await this.contractReader.getTldInfo([tld])).at(0)
+      if (!tldInfo) throw 'TLD not found'
+
+      const namehash = tldNamehash(normalize(name), isV2Tld(tld) ? undefined : tldInfo.identifier)
+      const contenthash = await this.contractReader.getContenthash(namehash, tldInfo, rpcUrl)
+      if (!contenthash || contenthash === '0x') return undefined
+      return contenthash
+    } catch (error) {
+      console.error(`Error getting content hash for ${name}`, error)
+    }
+  }
+
+  /**
+   * Retrieves the ABI (Application Binary Interface) for a given name on the Web3Name system.
+   * @param name - The name for which to retrieve the ABI.
+   * @param rpcUrl - Optional RPC URL to use for retrieving the ABI.
+   * @returns The ABI for the specified name, or undefined if the TLD (Top-Level Domain) is not found.
+   */
+  // async getABI({ name, rpcUrl }: { name: string; rpcUrl?: string }) {
+  //   const tld = name.split('.').pop()?.toLowerCase()
+  //   if (!tld) {
+  //     return undefined
+  //   }
+  //   try {
+  //     const tldInfo = (await this.contractReader.getTldInfo([tld])).at(0)
+  //     if (!tldInfo) throw 'TLD not found'
+
+  //     const namehash = tldNamehash(normalize(name), isV2Tld(tld) ? undefined : tldInfo.identifier)
+  //     const abi = await this.contractReader.getABI(namehash, tldInfo, rpcUrl)
+  //     return abi
+  //   } catch (error) {
+  //     console.error(`Error getting content hash for ${name}`, error)
+  //   }
+  // }
 }
