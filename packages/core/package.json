@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "@siddomains/injective-sidjs": "0.0.2-beta",
     "@siddomains/sei-sidjs": "^0.0.4",
     "@solana/web3.js": "^1.75.0",
-    "viem": ">=1.0.0"
+    "viem": ">=1.0.0 && <2"
   },
   "exports": {
     ".": {
