@@ -2,7 +2,11 @@
   "name": "@web3-name-sdk/core",
   "version": "0.1.14",
   "description": "One stop Web3 domain name resolution",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "tsup --format esm,cjs --dts --clean",
     "lint": "prettier --write .",
@@ -32,27 +36,26 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "default": "./dist/index.mjs"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./seiName": {
-      "types": "./dist/seiName.d.mts",
-      "default": "./dist/seiName.mjs"
+      "types": "./dist/seiName.d.ts",
+      "default": "./dist/seiName.js"
     },
     "./injName": {
-      "types": "./dist/injName.d.mts",
-      "default": "./dist/injName.mjs"
+      "types": "./dist/injName.d.ts",
+      "default": "./dist/injName.js"
     },
     "./solName": {
-      "types": "./dist/solName.d.mts",
-      "default": "./dist/solName.mjs"
+      "types": "./dist/solName.d.ts",
+      "default": "./dist/solName.js"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.mts",
-      "default": "./dist/utils/index.mjs"
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
     }
   },
-  "types": "dist/index.d.ts",
   "directories": {
     "test": "tests"
   },
@@ -63,6 +66,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist/**"
+  ],
   "tsup": {
     "entry": [
       "src/index.ts",
@@ -70,8 +76,11 @@
       "src/seiName.ts",
       "src/solName.ts",
       "src/utils/index.ts"
-    ]
+    ],
+    "splitting": false,
+    "target": "es2020"
   },
+  "sideEffects": false,
   "keywords": [
     "eth"
   ]
