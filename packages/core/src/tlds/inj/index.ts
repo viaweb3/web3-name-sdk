@@ -2,7 +2,6 @@
 import InjectiveID from '@siddomains/injective-sidjs'
 // @ts-ignore
 import { getInjectiveIDAddress } from '@siddomains/injective-sidjs'
-// @ts-ignore
 import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
 import { ChainId } from '@injectivelabs/ts-types'
 

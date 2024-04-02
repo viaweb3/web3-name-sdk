@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.1.14",
+  "version": "0.1.16",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -23,16 +23,14 @@
     "chai-as-promised": "^7.1.1",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.1",
-    "tsup": "^7.1.0",
-    "viem": "^1.19.11"
+    "tsup": "^7.1.0"
   },
   "peerDependencies": {
     "@bonfida/spl-name-service": "^1.4.0",
     "@sei-js/core": "^3.1.0",
     "@siddomains/injective-sidjs": "0.0.2-beta",
     "@siddomains/sei-sidjs": "^0.0.4",
-    "@solana/web3.js": "^1.75.0",
-    "viem": ">=1.0.0 && <2"
+    "@solana/web3.js": "^1.75.0"
   },
   "exports": {
     ".": {
@@ -61,7 +59,8 @@
   },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.10.0",
-    "@ensdomains/ens-validation": "^0.1.0"
+    "@ensdomains/ens-validation": "^0.1.0",
+    "viem": "^1.20"
   },
   "publishConfig": {
     "access": "public"
