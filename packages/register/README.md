@@ -4,10 +4,10 @@
 
 ---
 
-Install @web3-name-sdk/register, alongside peer dependency [Ethers v5](https://www.npmjs.com/package/ethers/v/5.7.2).
+Install @web3-name-sdk/register, alongside peer dependency.
 
 ```
-npm install @web3-name-sdk/register ethers@5.7.2
+npm install @web3-name-sdk/register ethers@5.7.2 viem@1.20
 ```
 
 ## Example
@@ -113,6 +113,44 @@ async function registerEthDomain(label: String) {
     })
   }
 }
+```
+
+Register a SPACE ID 3.0 .gno domain
+
+```typescript
+import { SIDRegisterV3, validateNameV3 } from '@web3-name-sdk/register'
+import { createPublicClient, createWalletClient, custom, http } from 'viem'
+import { gnosisChiado } from 'viem/chains'
+
+const publicClient = createPublicClient({
+  chain: gnosisChiado,
+  transport: http(),
+})
+const walletClient = createWalletClient({
+  chain: gnosisChiado,
+  transport: custom(window.ethereum),
+})
+const address = await walletClient.getAddresses()
+
+// init register instance
+const register = new SIDRegisterV3({
+  publicClient,
+  walletClient,
+  identifier: '274997945614032132263423446017095573970170942858695765128406315342190546',
+  controllerAddr: '0xd7b837a0e388b4c25200983bdaa3ef3a83ca86b7',
+  resolverAddr: '0x6D3B3F99177FB2A5de7F9E928a9BD807bF7b5BAD',
+})
+// normalize lael
+const normalizedLabel = validateNameV3('test123')
+// check if available
+const available = await register.getAvailable(normalizedLabel)
+// get price
+const price = await register.getRentPrice(normalizedLabel, 1)
+// register for one year and set as primary name
+await register.register(normalizedLabel, address[0], 1, {
+  setPrimaryName: true
+})
+
 ```
 
 ### SIDRegister Interface

@@ -1,4 +1,4 @@
-import {ConnectButton} from '@rainbow-me/rainbowkit';
+// import {ConnectButton} from '@rainbow-me/rainbowkit';
 import Logo from '../public/spaceId.svg'
 import './App.css'
 import {Link, Outlet} from "react-router-dom";
@@ -10,7 +10,7 @@ function App() {
                 <Link to='/'>
                     <img src={Logo} className='logo' alt="SPACE ID logo"/>
                 </Link>
-                <ConnectButton/>
+                {/*<ConnectButton/>*/}
             </header>
             <main className='mt-10 flex flex-col items-center justify-start gap-2'>
                 <Outlet/>

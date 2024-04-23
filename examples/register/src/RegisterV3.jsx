@@ -1,11 +1,12 @@
-import SIDRegister from '@web3-name-sdk/register'
-import { validateName } from '@siddomains/sidjs'
+import { SIDRegisterV3, validateNameV3 } from '@web3-name-sdk/register'
 import { utils } from 'ethers'
 import './App.css'
 import { useDeferredValue, useEffect, useRef, useState } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
+import { createPublicClient, http, createWalletClient, custom } from 'viem'
+import { bscTestnet } from 'viem/chains'
 
-function Register() {
+function RegisterV3() {
   const [inputName, setInputName] = useState('')
   const [availableName, setAvailableName] = useState('')
   const [invalid, setInvalid] = useState(false)
@@ -16,22 +17,35 @@ function Register() {
   const deferredInputName = useDeferredValue(inputName)
   const [show, setShow] = useState(false)
   const { address } = useAccount()
-  const sidRegistrarRef = useRef(null)
+  const sidRegistrarRef = useRef<SIDRegisterV3>null
   const { chain } = useNetwork()
   useEffect(() => {
-    if (signer) {
-      sidRegistrarRef.current = new SIDRegister({ signer, chainId: chain.id })
+    if (address) {
+      sidRegistrarRef.current = new SIDRegisterV3({
+        publicClient: createPublicClient({
+          chain: [bscTestnet],
+          transport: http(),
+        }),
+        walletClient: createWalletClient({
+          chain: [bscTestnet],
+          transport: custom(window.ethereum),
+        }),
+        identifier: '2636823826277309872098160245320544308382397132302228906642157795810372',
+        controllerAddr: '0xc5005a0027ccd013622940202693795973991dd4',
+        resolverAddr: '0x87fc5fdE1Db0b8e555aa3e1A7C41C983737DE1B7',
+        simulateAccount: address[0],
+      })
     } else {
       sidRegistrarRef.current = null
     }
-  }, [signer, chain])
+  }, [address])
 
   useEffect(() => {
     setInvalid(false)
     setAvailableName('')
     if (deferredInputName && sidRegistrarRef.current) {
       try {
-        const normalizedName = validateName(deferredInputName)
+        const normalizedName = validateNameV3(deferredInputName)
         sidRegistrarRef.current.getAvailable(normalizedName).then(res => {
           if (res) {
             setAvailableName(normalizedName)
@@ -54,17 +68,16 @@ function Register() {
     if (sidRegistrarRef.current) {
       await sidRegistrarRef.current.register(availableName, address, year, {
         setPrimaryName: checked, referrer: referrer,
-        onCommitSuccess(waitTime) {
-          window.alert('wait ' + waitTime + ' seconds')
-          return new Promise(resolve => {
-            setTimeout(resolve, waitTime * 1000)
-          })
-        },
       })
       setShow(true)
     }
   }
   return (<>
+    <div class=''>
+      <p className='text-black text-2xl font-bold'>tld config</p>
+      <div class='flex'>
+      </div>
+    </div>
     <div className='mt-10 flex flex-col gap-4 w-[320px]'>
       <p className='text-black text-2xl font-bold'>Register a domain</p>
       <div className='form-control w-full'>
@@ -139,4 +152,4 @@ function Register() {
   </>)
 }
 
-export default Register
+export default RegisterV3
