@@ -88,11 +88,17 @@ export class Web3Name {
                 const containsTldNameFunction = await this.contractReader.containsTldNameFunction(
                   contract.address,
                   tld,
-                  rpcUrl
+                  rpcUrl,
                 )
-                if (!containsTldNameFunction) throw 'TLD name is not supported for this TLD'
+                if (containsTldNameFunction) {
+                  name = await contract.read.tldName([reverseNamehash, tld.identifier])
+                } else {
+                  name = await contract.read.name([reverseNamehash])
+                }
+                // if (!containsTldNameFunction) throw 'TLD name is not supported for this TLD'
+              } else {
+                name = await contract.read.tldName([reverseNamehash, tld.identifier])
               }
-              name = await contract.read.tldName([reverseNamehash, tld.identifier])
             } else {
               name = await contract.read.name([reverseNamehash])
             }

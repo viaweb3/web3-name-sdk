@@ -49,6 +49,14 @@ describe('SID Name resolving', () => {
     })
     expect(domainName).to.be.eq('spaceid.bnb')
   }).timeout(10000)
+  it('it should properly resolve address based on tld', async () => {
+    const sid = createWeb3Name()
+    const domainName = await sid.getDomainName({
+      address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
+      queryTldList: ['bnb'],
+    })
+    expect(domainName).to.be.eq('spaceid.bnb')
+  }).timeout(10000)
   it('it should properly resolve a .bnb domain name', async () => {
     const sid = createWeb3Name()
     const address = await sid.getAddress('spaceid.bnb')

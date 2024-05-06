@@ -11,6 +11,7 @@
     "build": "tsup --format esm,cjs --dts --clean",
     "lint": "prettier --write .",
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
+    "test2": "ts-mocha -p tsconfig.json tests/**/sid.spec.ts",
     "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
   },
   "author": "SPACE ID",
