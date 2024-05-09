@@ -168,6 +168,8 @@ We are using popular public RPC services by default to make it easier to use. Bu
 For example, you can put custom rpcUrl as a parameter in `getAddress` function.
 
 ```typescript
+const web3name = createWeb3Name({rpcUrl: 'eth mainnet rpc url'})
+
 // Use custom RPC url (https://arb1.arbitrum.io/rpc)
 const address = await web3name.getAddress('registry.arb', {
   rpcUrl: 'https://arb1.arbitrum.io/rpc',
