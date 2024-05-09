@@ -18,8 +18,8 @@ type GetDomainNameProps = {
 export class Web3Name {
   private contractReader: ContractReader
 
-  constructor({ isDev = false }: { isDev?: boolean }) {
-    this.contractReader = new ContractReader(isDev)
+  constructor({ isDev = false, rpcUrl }: { isDev?: boolean, rpcUrl?: string }) {
+    this.contractReader = new ContractReader(isDev, rpcUrl)
   }
 
   /**

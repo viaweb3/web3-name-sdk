@@ -24,16 +24,18 @@ import { createCustomClient, getBaseContractFromChainId } from './common'
 
 export class ContractReader {
   private isDev: boolean
+  private rpcUrl?: string
 
-  constructor(isDev: boolean) {
+  constructor(isDev: boolean, rpcUrl?: string) {
     this.isDev = isDev
+    this.rpcUrl = rpcUrl ?? 'https://rpc.ankr.com/eth'
   }
 
   /** Get verified TLD hub contract */
   getVerifiedTldHubContract(): GetContractReturnType<typeof VerifiedTldHubAbi, PublicClient<HttpTransport>> {
     const ethClient = createPublicClient({
       chain: this.isDev ? bscTestnet : mainnet,
-      transport: http(this.isDev ? undefined : 'https://rpc.ankr.com/eth'),
+      transport: http(this.isDev ? undefined : this.rpcUrl),
     })
 
     const hubContract = getContract({
