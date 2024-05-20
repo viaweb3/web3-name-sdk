@@ -63,7 +63,7 @@ There are optional parameters in the method to select your target chain or TLD (
 
 By providing chain IDs, you can resolve addresses on selected chains and get an available domain name from all TLDs deployed on these chains.
 
-``` typescript
+```typescript
 // Resolve an address from Gnosis Chiado
 const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
@@ -71,16 +71,31 @@ const name = await web3name.getDomainName({
 })
 // expect: lydia.gno
 ```
+```typescript
+// Batch resolve address from Gnosis Chiado
+const names = await web3name.batchGetDomainName({
+  addressList: ['0x2886D6792503e04b19640C1f1430d23219AF177F','0xfceec24912535a47c0cba436977537ad225a2562'],
+  queryChainIdList: [10200],
+})
+```
 
 By providing TLDs, address can be resolved from the selected TLDs and get an available TLD primary name.
 
-``` typescript
+```typescript
 // Resolve an address from .gno TLD
 const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
   queryTldList: ['gno'],
 })
 // expect: genome.gno
+```
+
+```typescript
+// Batch resolve address from .gno TLD
+const names = await web3name.batchGetDomainName({
+  addressList: ['0x2886D6792503e04b19640C1f1430d23219AF177F','0xfceec24912535a47c0cba436977537ad225a2562'],
+  queryChainIdList: ['gno'],
+})
 ```
 
 #### 4. Record
