@@ -29,4 +29,12 @@ export default defineConfig({
     resolve: {
         mainFields: ['main','module', 'jsnext:main', 'jsnext']
     },
+    build: {
+        rollupOptions: {
+            plugins: [inject({ Buffer: ['buffer', 'Buffer'] })],
+        },
+        commonjsOptions: {
+            transformMixedEsModules: true
+        }
+    },
 })

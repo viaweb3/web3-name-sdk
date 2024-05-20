@@ -1,12 +1,13 @@
-import { createPublicClient, http, namehash } from 'viem'
+import { Address, createPublicClient, Hash, http, namehash } from 'viem'
 import { normalize } from 'viem/ens'
 import { TLD } from '../../constants/tld'
 import { getChainFromId, isEthChain, isV2Tld } from '../../utils/common'
 import { ContractReader } from '../../utils/contract'
-import { tldNamehash } from '../../utils/namehash'
-import { validateName } from '../../utils/validate'
+import { tldNamehash } from '../../utils'
+import { validateName } from '../../utils'
 import { UDResolver } from '../UD'
 import { LensProtocol } from '../lens'
+import { TldInfo } from '../../types/tldInfo'
 
 type GetDomainNameProps = {
   queryChainIdList?: number[]
@@ -14,12 +15,87 @@ type GetDomainNameProps = {
   address: string
   rpcUrl?: string
 }
+type BatchGetDomainNameProps = { addressList: string[] } & Omit<GetDomainNameProps, 'address'>
+type BatchGetDomainNameReturn = { address: string, domain: string | null }[]
 
 export class Web3Name {
   private contractReader: ContractReader
 
   constructor({ isDev = false, rpcUrl }: { isDev?: boolean, rpcUrl?: string } = {}) {
     this.contractReader = new ContractReader(isDev, rpcUrl)
+  }
+
+  private async getTldInfoList({ queryTldList, queryChainIdList }: Omit<GetDomainNameProps, 'address'>) {
+    const hubContract = this.contractReader.getVerifiedTldHubContract()
+    const chainTlds: string[] = []
+    for await (const chainId of queryChainIdList ?? []) {
+      const tlds = await hubContract.read.getChainTlds([BigInt(chainId)])
+
+      if (isEthChain(chainId)) {
+        // Put ENS at the end of the list
+        const ethTld = tlds.filter((e) => e !== TLD.ENS).at(0)
+        if (ethTld) chainTlds.push(ethTld)
+        chainTlds.push(TLD.ENS)
+      } else {
+        const tldName = tlds.at(0)
+        if (tldName) chainTlds.push(tldName)
+      }
+    }
+
+    const tlds = queryTldList ?? []
+    // Fetch all TLDs if no TLDs are specified
+    if (tlds.length === 0) {
+      const allTlds = await hubContract.read.getTlds()
+      tlds.push(...allTlds)
+    }
+
+    // Use chain TLDs if queryChainIdList is specified
+    const reqTlds = queryChainIdList?.length ? chainTlds : tlds
+    return await this.contractReader.getTldInfo(reqTlds)
+  }
+
+  private async getDomainNameByTld(address: string, reverseNamehash: Hash, tld: TldInfo, isTldName: boolean, rpcUrl?: string) {
+    let name: string | null = null
+
+    try {
+      if (tld.tld === TLD.ENS) {
+        const contract = await this.contractReader.getReverseResolverContract(reverseNamehash, tld, rpcUrl)
+        name = (await contract?.read.name([reverseNamehash])) ?? ''
+      } else {
+        const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld, rpcUrl)
+        if (isTldName) {
+          if (isV2Tld(tld.tld)) {
+            const containsTldNameFunction = await this.contractReader.containsTldNameFunction(
+              contract.address,
+              tld,
+              rpcUrl,
+            )
+            if (containsTldNameFunction) {
+              name = await contract.read.tldName([reverseNamehash, tld.identifier])
+            } else {
+              name = await contract.read.name([reverseNamehash])
+            }
+            // if (!containsTldNameFunction) throw 'TLD name is not supported for this TLD'
+          } else {
+            name = await contract.read.tldName([reverseNamehash, tld.identifier])
+          }
+        } else {
+          name = await contract.read.name([reverseNamehash])
+        }
+      }
+    } catch (error) {
+      // console.error(`Error getting name for ${address} from ${tld.tld}`, error)
+    }
+
+    if (name) {
+      const reverseAddress = await this.getAddress(name, { rpcUrl })
+      if (reverseAddress?.toLowerCase() === address.toLowerCase()) {
+        return name
+      } else {
+        return null
+      }
+    }
+    return name
   }
 
   /**
@@ -43,77 +119,17 @@ export class Web3Name {
       const reverseNode = `${normalize(address).slice(2)}.addr.reverse`
       const reverseNamehash = namehash(reverseNode)
 
-      const hubContract = this.contractReader.getVerifiedTldHubContract()
-
       // Fetch TLDs from requested chains
-      const chainTlds: string[] = []
-      for await (const chainId of queryChainIdList ?? []) {
-        const tlds = await hubContract.read.getChainTlds([BigInt(chainId)])
-
-        if (isEthChain(chainId)) {
-          // Put ENS at the end of the list
-          const ethTld = tlds.filter((e) => e !== TLD.ENS).at(0)
-          if (ethTld) chainTlds.push(ethTld)
-          chainTlds.push(TLD.ENS)
-        } else {
-          const tldName = tlds.at(0)
-          if (tldName) chainTlds.push(tldName)
-        }
-      }
-
-      const tlds = queryTldList ?? []
-      // Fetch all TLDs if no TLDs are specified
-      if (tlds.length === 0) {
-        const allTlds = await hubContract.read.getTlds()
-        tlds.push(...allTlds)
-      }
-
-      // Use chain TLDs if queryChainIdList is specified
-      const reqTlds = queryChainIdList?.length ? chainTlds : tlds
-      const tldInfoList = await this.contractReader.getTldInfo(reqTlds)
+      const tldInfoList = await this.getTldInfoList({ queryChainIdList, queryTldList, rpcUrl })
 
       const resList: (string | null)[] = []
       for await (const tld of tldInfoList) {
         if (!tld.tld) continue
-        let name = ''
-
-        try {
-          if (tld.tld === TLD.ENS) {
-            const contract = await this.contractReader.getReverseResolverContract(reverseNamehash, tld, rpcUrl)
-            name = (await contract?.read.name([reverseNamehash])) ?? ''
-          } else {
-            const contract = await this.contractReader.getResolverContractByTld(reverseNamehash, tld, rpcUrl)
-            if (queryTldList?.length) {
-              if (isV2Tld(tld.tld)) {
-                const containsTldNameFunction = await this.contractReader.containsTldNameFunction(
-                  contract.address,
-                  tld,
-                  rpcUrl,
-                )
-                if (containsTldNameFunction) {
-                  name = await contract.read.tldName([reverseNamehash, tld.identifier])
-                } else {
-                  name = await contract.read.name([reverseNamehash])
-                }
-                // if (!containsTldNameFunction) throw 'TLD name is not supported for this TLD'
-              } else {
-                name = await contract.read.tldName([reverseNamehash, tld.identifier])
-              }
-            } else {
-              name = await contract.read.name([reverseNamehash])
-            }
-          }
-        } catch (error) {
-          // console.error(`Error getting name for ${address} from ${tld.tld}`, error)
-          continue
-        }
-
+        const isTldName = !!queryTldList?.length
+        let name = await this.getDomainNameByTld(address, reverseNamehash, tld, isTldName, rpcUrl)
         if (name) {
-          const reverseAddress = await this.getAddress(name, { rpcUrl })
-          if (reverseAddress?.toLowerCase() === address.toLowerCase()) {
-            resList.push(name)
-            break
-          }
+          resList.push(name)
+          break
         }
       }
 
@@ -133,6 +149,53 @@ export class Web3Name {
     }
   }
 
+  async batchGetDomainName({
+                             addressList,
+                             queryChainIdList,
+                             queryTldList,
+                             rpcUrl,
+                           }: BatchGetDomainNameProps): Promise<BatchGetDomainNameReturn | null> {
+    if (queryChainIdList?.length && queryTldList?.length) {
+      console.warn('queryChainIdList and queryTldList cannot be used together, queryTldList will be ignored')
+    }
+    if (!addressList.length) return []
+    let curAddr = addressList[0]
+    try {
+      // Fetch TLDs from requested chains
+      const tldInfoList = await this.getTldInfoList({ queryChainIdList, queryTldList, rpcUrl })
+      const resList: BatchGetDomainNameReturn = []
+      const isIncludeLens = queryTldList?.includes(TLD.LENS)
+      const isIncludeCrypto = queryTldList?.includes(TLD.CRYPTO)
+      for await (const address of addressList) {
+        curAddr = address
+        // Calculate reverse node and namehash
+        const reverseNode = `${normalize(address).slice(2)}.addr.reverse`
+        const reverseNamehash = namehash(reverseNode)
+        let nameRes: string | null = null
+        for await (const tld of tldInfoList) {
+          if (!tld.tld) continue
+          const isTldName = !!queryTldList?.length
+          nameRes = await this.getDomainNameByTld(address, reverseNamehash, tld, isTldName, rpcUrl)
+          if (nameRes) {
+            break
+          }
+        }
+        if (!nameRes && isIncludeLens) {
+          nameRes = await LensProtocol.getDomainName(address)
+        }
+        if (!nameRes && isIncludeCrypto) {
+          const UD = new UDResolver()
+          nameRes = await UD.getName(address)
+        }
+        resList.push({ address, domain: nameRes })
+      }
+      return resList
+    } catch (e) {
+      console.log(`Error getting name for reverse record of ${curAddr}`, e)
+      return null
+    }
+  }
+
   /**
    * Get address from name. If coinType is specified, it will return ENSIP-9 address for that coinType.
    *
@@ -143,7 +206,7 @@ export class Web3Name {
    */
   async getAddress(
     name: string,
-    { coinType, rpcUrl }: { coinType?: number; rpcUrl?: string } = {}
+    { coinType, rpcUrl }: { coinType?: number; rpcUrl?: string } = {},
   ): Promise<string | null> {
     const tld = name.split('.').pop()?.toLowerCase()
     if (!tld) {

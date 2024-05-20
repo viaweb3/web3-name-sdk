@@ -12,7 +12,8 @@
     "lint": "prettier --write .",
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test2": "ts-mocha -p tsconfig.json tests/**/sid.spec.ts",
-    "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts"
+    "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts",
+    "testBatch": "ts-mocha -p tsconfig.json tests/**/batch.spec.ts"
   },
   "author": "SPACE ID",
   "license": "MIT",
@@ -27,7 +28,7 @@
     "tsup": "^7.1.0"
   },
   "peerDependencies": {
-    "@bonfida/spl-name-service": "^1.4.0",
+    "@bonfida/spl-name-service": "^2.5.1",
     "@sei-js/core": "^3.1.0",
     "@siddomains/injective-sidjs": "0.0.2-beta",
     "@siddomains/sei-sidjs": "^0.0.4",
