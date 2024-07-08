@@ -2,7 +2,7 @@ import {
   Address,
   createPublicClient,
   getContract,
-  getFunctionSelector,
+  toFunctionSelector,
   hexToBigInt,
   hexToNumber,
   http,
@@ -41,7 +41,9 @@ export class ContractReader {
     const hubContract = getContract({
       address: this.isDev ? CONTRACTS.verifiedTldHubTest : CONTRACTS.verifiedTldHub,
       abi: VerifiedTldHubAbi,
-      publicClient: ethClient,
+      client: {
+        public: ethClient,
+      },
     })
 
     return hubContract
@@ -65,13 +67,15 @@ export class ContractReader {
   async getResolverContractByTld(
     namehash: Address,
     tldInfo: TldInfo,
-    rpcUrl?: string
+    rpcUrl?: string,
   ): Promise<GetContractReturnType<typeof ResolverAbi, PublicClient<HttpTransport>>> {
     const client = createCustomClient(tldInfo, rpcUrl)
     const registryContract = getContract({
       address: tldInfo.registry,
       abi: SIDRegistryAbi,
-      publicClient: client,
+      client: {
+        public: client,
+      },
     })
 
     const resolverAddr = await registryContract.read.resolver([namehash])
@@ -82,7 +86,9 @@ export class ContractReader {
     const resolverContract = getContract({
       address: resolverAddr,
       abi: ResolverAbi,
-      publicClient: client,
+      client: {
+        public: client,
+      },
     })
     return resolverContract
   }
@@ -91,20 +97,24 @@ export class ContractReader {
   async getReverseResolverContract(
     reverseNamehash: Address,
     tldInfo: TldInfo,
-    rpcUrl?: string
+    rpcUrl?: string,
   ): Promise<GetContractReturnType<typeof ReverseResolverAbi, PublicClient<HttpTransport>> | undefined> {
     if (!tldInfo.defaultRpc) return undefined
     const client = createCustomClient(tldInfo, rpcUrl)
     const registryContract = getContract({
       address: tldInfo.registry,
       abi: SIDRegistryAbi,
-      publicClient: client,
+      client: {
+        public: client,
+      },
     })
     const resolverAddr = await registryContract.read.resolver([reverseNamehash])
     const resolverContract = getContract({
       address: resolverAddr ?? '',
       abi: ReverseResolverAbi,
-      publicClient: client,
+      client: {
+        public: client,
+      },
     })
 
     return resolverContract
@@ -117,7 +127,9 @@ export class ContractReader {
     const sannContract = getContract({
       address: tldInfo.sann,
       abi: SANNContractAbi,
-      publicClient: client,
+      client: {
+        public: client,
+      },
     })
 
     const tldBaseContractAddr =
@@ -129,7 +141,12 @@ export class ContractReader {
       return `https://metadata.ens.domains/mainnet/${tldBaseContractAddr}/${tokenId}`
     }
 
-    const tldBaseContract = getContract({ address: tldBaseContractAddr, abi: TldBaseContractAbi, publicClient: client })
+    const tldBaseContract = getContract({
+      address: tldBaseContractAddr, abi: TldBaseContractAbi,
+      client: {
+        public: client,
+      },
+    })
     const metadata = await tldBaseContract.read.tokenURI([tokenId])
     return metadata
   }
@@ -155,7 +172,7 @@ export class ContractReader {
   async containsTldNameFunction(resolverAddr: Address, tldInfo: TldInfo, rpcUrl?: string): Promise<boolean> {
     const client = createCustomClient(tldInfo, rpcUrl)
     const bytecode = await client.getBytecode({ address: resolverAddr })
-    const selector = getFunctionSelector('tldName(bytes32, uint256)')
+    const selector = toFunctionSelector('tldName(bytes32, uint256)')
     return bytecode?.includes(selector.slice(2)) ?? false
   }
 
@@ -163,11 +180,11 @@ export class ContractReader {
     resolverAddr: Address,
     functionName: string,
     tldInfo: TldInfo,
-    rpcUrl?: string
+    rpcUrl?: string,
   ): Promise<boolean> {
     const client = createCustomClient(tldInfo, rpcUrl)
     const bytecode = await client.getBytecode({ address: resolverAddr })
-    const selector = getFunctionSelector(functionName)
+    const selector = toFunctionSelector(functionName)
     return bytecode?.includes(selector.slice(2)) ?? false
   }
 }

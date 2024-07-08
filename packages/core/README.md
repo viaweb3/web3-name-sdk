@@ -8,7 +8,7 @@ Developers can resolve web3 domain name or reverse resolve address with web3 nam
 
 ### Install
 
-`npm install @web3-name-sdk/core viem@^1.20`
+`npm install @web3-name-sdk/core viem@^2.15.1`
 
 If you are using `next.js`, please add the following configuration in your `next.config.js` in order to transpile commonjs dependencies:
 
@@ -64,18 +64,18 @@ There are optional parameters in the method to select your target chain or TLD (
 By providing chain IDs, you can resolve addresses on selected chains and get an available domain name from all TLDs deployed on these chains.
 
 ```typescript
-// Resolve an address from Gnosis Chiado
+// Resolve an address from Gnosis
 const name = await web3name.getDomainName({
-  address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
-  queryChainIdList: [10200],
+  address: '0xfceec24912535a47c0cba436977537ad225a2562',
+  queryChainIdList: [100],
 })
-// expect: lydia.gno
+// expect: genome.gno
 ```
 ```typescript
-// Batch resolve address from Gnosis Chiado
+// Batch resolve address from Gnosis
 const names = await web3name.batchGetDomainName({
   addressList: ['0x2886D6792503e04b19640C1f1430d23219AF177F','0xfceec24912535a47c0cba436977537ad225a2562'],
-  queryChainIdList: [10200],
+  queryChainIdList: [100],
 })
 ```
 
@@ -87,7 +87,7 @@ const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
   queryTldList: ['gno'],
 })
-// expect: genome.gno
+// expect: gnosischains.gno
 ```
 
 ```typescript

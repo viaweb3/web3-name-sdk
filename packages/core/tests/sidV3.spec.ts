@@ -1,6 +1,5 @@
 import chai, { expect } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-import { createWeb3Name } from '../src'
 import { createInjName } from '../src/injName'
 import { createSeiName } from '../src/seiName'
 import { createSolName } from '../src/solName'
@@ -22,6 +21,14 @@ describe('SID V3 Name resolving', () => {
       address: 'sei1tmew60aj394kdfff0t54lfaelu3p8j8lz93pmf',
     })
     expect(domain).to.be.eq('allen.sei')
+  }).timeout(10000)
+
+  it('it should properly resolve domain using Sei Name', async () => {
+    const web3Name = createSeiName()
+    const address = await web3Name.getAddress({
+      name: 'french.sei',
+    })
+    expect(address).to.be.eq('sei1qu9zn44wzvmjtpg3km8dk2ej50de4dm4hemnqp')
   }).timeout(10000)
 
   it('it should properly resolve address using Inj Name', async () => {

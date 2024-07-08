@@ -1,4 +1,4 @@
-import { Address, createPublicClient, Hash, http, namehash } from 'viem'
+import { createPublicClient, Hash, http, namehash } from 'viem'
 import { normalize } from 'viem/ens'
 import { TLD } from '../../constants/tld'
 import { getChainFromId, isEthChain, isV2Tld } from '../../utils/common'
