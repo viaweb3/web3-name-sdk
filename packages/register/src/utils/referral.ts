@@ -1,6 +1,6 @@
 // @ts-ignore
 import { namehash } from '@siddomains/sidjs'
-import { ReferralSupportedChainId } from '../index.d'
+import { ReferralSupportedChainId } from '../types'
 
 const emptySignature = [
   '0x0000000000000000000000000000000000000000',

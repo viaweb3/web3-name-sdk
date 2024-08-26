@@ -7,7 +7,7 @@
 Install @web3-name-sdk/register, alongside peer dependency.
 
 ```
-npm install @web3-name-sdk/register ethers@5.7.2 viem@1.20
+npm install @web3-name-sdk/register ethers@5.7.2 viem@1.21
 ```
 
 ## Example
