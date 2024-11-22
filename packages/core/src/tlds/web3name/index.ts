@@ -1,27 +1,24 @@
-import { createPublicClient, Hash, http, namehash } from 'viem'
+import { Address, createPublicClient, getContract, Hash, http, namehash } from 'viem'
 import { normalize } from 'viem/ens'
 import { TLD } from '../../constants/tld'
-import { getChainFromId, isEthChain, isV2Tld } from '../../utils/common'
+import { createCustomClient, getChainFromId, isEthChain, isV2Tld } from '../../utils/common'
 import { ContractReader } from '../../utils/contract'
 import { tldNamehash } from '../../utils'
 import { validateName } from '../../utils'
 import { UDResolver } from '../UD'
 import { LensProtocol } from '../lens'
 import { TldInfo } from '../../types/tldInfo'
-
-type GetDomainNameProps = {
-  queryChainIdList?: number[]
-  queryTldList?: string[]
-  address: string
-  rpcUrl?: string
-}
-type BatchGetDomainNameProps = { addressList: string[] } & Omit<GetDomainNameProps, 'address'>
-type BatchGetDomainNameReturn = { address: string, domain: string | null }[]
+import { BatchGetAddressProps, BatchGetDomainNameProps, BatchGetReturn, GetDomainNameProps } from '../../types'
+import { SIDRegistryAbi } from '../../abi/SIDRegistry'
+import { ResolverAbi } from '../../abi/Resolver'
+import { ReverseResolverAbi } from '../../abi/ReverseResolver'
 
 export class Web3Name {
   private contractReader: ContractReader
+  private resolverContractCache: Map<string, any> = new Map()
+  private tldNameFunctionCache = new Map<string, any>()
 
-  constructor({ isDev = false, rpcUrl }: { isDev?: boolean, rpcUrl?: string } = {}) {
+  constructor({ isDev = false, rpcUrl }: { isDev?: boolean; rpcUrl?: string } = {}) {
     this.contractReader = new ContractReader(isDev, rpcUrl)
   }
 
@@ -54,7 +51,34 @@ export class Web3Name {
     return await this.contractReader.getTldInfo(reqTlds)
   }
 
-  private async getDomainNameByTld(address: string, reverseNamehash: Hash, tld: TldInfo, isTldName: boolean, rpcUrl?: string) {
+  private async getResolverContract(tld: TldInfo, reverseNamehash: Hash, rpcUrl?: string) {
+    return tld.tld === TLD.ENS
+      ? await this.contractReader.getReverseResolverContract(reverseNamehash, tld, rpcUrl)
+      : await this.contractReader.getResolverContractByTld(reverseNamehash, tld, rpcUrl)
+  }
+
+  private async isHasTldNameFunction(address: Address, tld: TldInfo, reverseNamehash: Hash) {
+    let containsTldNameFunction
+    if (this.resolverContractCache.has(`${address}_${tld.tld}`)) {
+      containsTldNameFunction = this.resolverContractCache.get(`${address}_${tld.tld}`)
+    } else {
+      containsTldNameFunction = await this.contractReader.containsTldNameFunction(address, tld)
+      this.resolverContractCache.set(`${address}_${tld.tld}`, containsTldNameFunction)
+    }
+    const res = {
+      functionName: containsTldNameFunction ? 'tldName' : 'name',
+      args: containsTldNameFunction ? [reverseNamehash, tld.identifier] : [reverseNamehash],
+    }
+    return res
+  }
+
+  private async getDomainNameByTld(
+    address: string,
+    reverseNamehash: Hash,
+    tld: TldInfo,
+    isTldName: boolean,
+    rpcUrl?: string
+  ) {
     let name: string | null = null
 
     try {
@@ -68,7 +92,7 @@ export class Web3Name {
             const containsTldNameFunction = await this.contractReader.containsTldNameFunction(
               contract.address,
               tld,
-              rpcUrl,
+              rpcUrl
             )
             if (containsTldNameFunction) {
               name = await contract.read.tldName([reverseNamehash, tld.identifier])
@@ -150,51 +174,216 @@ export class Web3Name {
   }
 
   async batchGetDomainName({
-                             addressList,
-                             queryChainIdList,
-                             queryTldList,
-                             rpcUrl,
-                           }: BatchGetDomainNameProps): Promise<BatchGetDomainNameReturn | null> {
-    if (queryChainIdList?.length && queryTldList?.length) {
-      console.warn('queryChainIdList and queryTldList cannot be used together, queryTldList will be ignored')
+    addressList,
+    queryTld,
+    queryChainId,
+  }: BatchGetDomainNameProps): Promise<BatchGetReturn | null> {
+    if (queryChainId && queryTld) {
+      console.warn('queryChainId and queryTld cannot be used together, queryTld will be ignored')
     }
     if (!addressList.length) return []
-    let curAddr = addressList[0]
+    const tldInfoList = await this.getTldInfoList({ queryChainId, queryTld })
+    const tldInfo = tldInfoList.find((tld) => (queryTld ? tld.tld === queryTld : tld.chainId === BigInt(queryChainId!)))
+    if (!tldInfo) {
+      console.log(`queryChainId or queryTld need to be`)
+      return []
+    }
+    const client = createCustomClient(tldInfo)
     try {
-      // Fetch TLDs from requested chains
-      const tldInfoList = await this.getTldInfoList({ queryChainIdList, queryTldList, rpcUrl })
-      const resList: BatchGetDomainNameReturn = []
-      const isIncludeLens = queryTldList?.includes(TLD.LENS)
-      const isIncludeCrypto = queryTldList?.includes(TLD.CRYPTO)
-      for await (const address of addressList) {
-        curAddr = address
-        // Calculate reverse node and namehash
+      // addr to Hash
+      const reverseAddress = addressList.map((address) => {
         const reverseNode = `${normalize(address).slice(2)}.addr.reverse`
         const reverseNamehash = namehash(reverseNode)
-        let nameRes: string | null = null
-        for await (const tld of tldInfoList) {
-          if (!tld.tld) continue
-          const isTldName = !!queryTldList?.length
-          nameRes = await this.getDomainNameByTld(address, reverseNamehash, tld, isTldName, rpcUrl)
-          if (nameRes) {
-            break
-          }
+        return {
+          reverseNamehash,
         }
-        if (!nameRes && isIncludeLens) {
-          nameRes = await LensProtocol.getDomainName(address)
+      })
+      // get resolver contract by multicall
+      const resolverContractCalls = reverseAddress.map(({ reverseNamehash }) => {
+        return {
+          address: tldInfo.registry,
+          abi: SIDRegistryAbi,
+          functionName: 'resolver',
+          args: [reverseNamehash],
         }
-        if (!nameRes && isIncludeCrypto) {
-          const UD = new UDResolver()
-          nameRes = await UD.getName(address)
+      })
+      const resolverContract = (
+        await client.multicall({
+          contracts: resolverContractCalls,
+        })
+      ).map((v: any, index) => {
+        return {
+          address: v.result,
+          reverseNamehash: reverseAddress[index].reverseNamehash,
         }
-        resList.push({ address, domain: nameRes })
+      })
+      // get tld name function to resolve
+      const tldNameFunctionResults: {
+        functionName: string
+        reverseNamehash: `0x${string}`
+        args: (bigint | `0x${string}`)[]
+      }[] = []
+      for (const { address, reverseNamehash } of resolverContract) {
+        const cacheKey = `${address}_${reverseNamehash}`
+        if (this.tldNameFunctionCache.has(cacheKey)) {
+          tldNameFunctionResults.push({
+            ...this.tldNameFunctionCache.get(cacheKey),
+            reverseNamehash,
+          })
+        } else {
+          const data = await this.isHasTldNameFunction(address, tldInfo, reverseNamehash)
+          this.tldNameFunctionCache.set(cacheKey, data)
+          tldNameFunctionResults.push({
+            ...data,
+            reverseNamehash,
+          })
+        }
       }
-      return resList
+      // batch get results
+      const calls = resolverContract.map(({ address, reverseNamehash }) => {
+        const { functionName, args } = tldNameFunctionResults.find((item) => item.reverseNamehash === reverseNamehash)!
+        return {
+          address,
+          abi: ResolverAbi,
+          functionName,
+          args,
+        }
+      })
+      const domainRes = (
+        await client.multicall({
+          contracts: calls,
+        })
+      ).map((v: any) => v.result)
+      const res: BatchGetReturn = []
+      const verifiedRes = await this.batchGetAddress({ nameList: domainRes, queryTld, queryChainId })
+      const verifiedAddress = verifiedRes?.map(({ address }) => address)
+      addressList.forEach((address, index) => {
+        if (address.toLowerCase() === verifiedAddress?.[index]?.toLowerCase()) {
+          res.push({
+            address,
+            domain: domainRes[index],
+          })
+        } else {
+          res.push({
+            address,
+            domain: null,
+          })
+        }
+      })
+      return res ?? null
     } catch (e) {
-      console.log(`Error getting name for reverse record of ${curAddr}`, e)
+      console.log(`Error getting names for addresses`, e)
       return null
     }
   }
+
+  async batchGetAddress({ nameList, queryTld, queryChainId }: BatchGetAddressProps): Promise<BatchGetReturn | null> {
+    if (queryChainId && queryTld) {
+      console.warn('queryChainId and queryTld cannot be used together, queryTld will be ignored')
+    }
+    if (!nameList.length) return []
+    const tldInfoList = await this.getTldInfoList({ queryChainId, queryTld })
+    const tldInfo = tldInfoList.find((tld) => (queryTld ? tld.tld === queryTld : tld.chainId === BigInt(queryChainId!)))
+    if (!tldInfo) {
+      console.log(`queryChainId or queryTld need to be`)
+      return []
+    }
+    const client = createCustomClient(tldInfo)
+    try {
+      const verifiedNames: string[] = nameList.map((name) => {
+        const normalizedDomain = TLD.LENS === tldInfo.tld ? name : normalize(name)
+        const namehash = tldNamehash(normalizedDomain, isV2Tld(tldInfo.tld) ? undefined : tldInfo.identifier)
+        return namehash
+      })
+      const resolveContractCalls = verifiedNames.map((namehash) => {
+        return {
+          address: tldInfo.registry,
+          abi: SIDRegistryAbi,
+          functionName: 'resolver',
+          args: [namehash],
+        }
+      })
+      const resolverContracts = (
+        await client.multicall({
+          contracts: resolveContractCalls,
+        })
+      ).map((v: any, index) => {
+        return {
+          address: v.result,
+          namehash: verifiedNames[index],
+        }
+      })
+      const getAddressCalls = resolverContracts.map(({ address, namehash }) => {
+        return {
+          address,
+          abi: ResolverAbi,
+          functionName: 'addr',
+          args: [namehash],
+        }
+      })
+      const res = (
+        await client.multicall({
+          contracts: getAddressCalls,
+        })
+      ).map((v: any, index) => {
+        return {
+          address: v.result ?? null,
+          domain: nameList[index],
+        }
+      })
+      return res
+    } catch (error) {
+      console.log(`Error getting address for names`, error)
+      return null
+    }
+  }
+
+  // async batchGetDomainName({
+  //   addressList,
+  //   queryChainIdList,
+  //   queryTldList,
+  //   rpcUrl,
+  // }: BatchGetDomainNameProps): Promise<BatchGetDomainNameReturn | null> {
+  //   if (queryChainIdList?.length && queryTldList?.length) {
+  //     console.warn('queryChainIdList and queryTldList cannot be used together, queryTldList will be ignored')
+  //   }
+  //   if (!addressList.length) return []
+  //   let curAddr = addressList[0]
+  //   try {
+  //     // Fetch TLDs from requested chains
+  //     const tldInfoList = await this.getTldInfoList({ queryChainIdList, queryTldList, rpcUrl })
+  //     const resList: BatchGetDomainNameReturn = []
+  //     const isIncludeLens = queryTldList?.includes(TLD.LENS)
+  //     const isIncludeCrypto = queryTldList?.includes(TLD.CRYPTO)
+  //     for await (const address of addressList) {
+  //       curAddr = address
+  //       // Calculate reverse node and namehash
+  //       const reverseNode = `${normalize(address).slice(2)}.addr.reverse`
+  //       const reverseNamehash = namehash(reverseNode)
+  //       let nameRes: string | null = null
+  //       for await (const tld of tldInfoList) {
+  //         if (!tld.tld) continue
+  //         const isTldName = !!queryTldList?.length
+  //         nameRes = await this.getDomainNameByTld(address, reverseNamehash, tld, isTldName, rpcUrl)
+  //         if (nameRes) {
+  //           break
+  //         }
+  //       }
+  //       if (!nameRes && isIncludeLens) {
+  //         nameRes = await LensProtocol.getDomainName(address)
+  //       }
+  //       if (!nameRes && isIncludeCrypto) {
+  //         const UD = new UDResolver()
+  //         nameRes = await UD.getName(address)
+  //       }
+  //       resList.push({ address, domain: nameRes })
+  //     }
+  //     return resList
+  //   } catch (e) {
+  //     console.log(`Error getting name for reverse record of ${curAddr}`, e)
+  //     return null
+  //   }
+  // }
 
   /**
    * Get address from name. If coinType is specified, it will return ENSIP-9 address for that coinType.
@@ -206,7 +395,7 @@ export class Web3Name {
    */
   async getAddress(
     name: string,
-    { coinType, rpcUrl }: { coinType?: number; rpcUrl?: string } = {},
+    { coinType, rpcUrl }: { coinType?: number; rpcUrl?: string } = {}
   ): Promise<string | null> {
     const tld = name.split('.').pop()?.toLowerCase()
     if (!tld) {

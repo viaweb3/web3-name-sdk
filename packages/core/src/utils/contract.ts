@@ -67,7 +67,7 @@ export class ContractReader {
   async getResolverContractByTld(
     namehash: Address,
     tldInfo: TldInfo,
-    rpcUrl?: string,
+    rpcUrl?: string
   ): Promise<GetContractReturnType<typeof ResolverAbi, PublicClient<HttpTransport>>> {
     const client = createCustomClient(tldInfo, rpcUrl)
     const registryContract = getContract({
@@ -97,7 +97,7 @@ export class ContractReader {
   async getReverseResolverContract(
     reverseNamehash: Address,
     tldInfo: TldInfo,
-    rpcUrl?: string,
+    rpcUrl?: string
   ): Promise<GetContractReturnType<typeof ReverseResolverAbi, PublicClient<HttpTransport>> | undefined> {
     if (!tldInfo.defaultRpc) return undefined
     const client = createCustomClient(tldInfo, rpcUrl)
@@ -142,7 +142,8 @@ export class ContractReader {
     }
 
     const tldBaseContract = getContract({
-      address: tldBaseContractAddr, abi: TldBaseContractAbi,
+      address: tldBaseContractAddr,
+      abi: TldBaseContractAbi,
       client: {
         public: client,
       },
@@ -180,7 +181,7 @@ export class ContractReader {
     resolverAddr: Address,
     functionName: string,
     tldInfo: TldInfo,
-    rpcUrl?: string,
+    rpcUrl?: string
   ): Promise<boolean> {
     const client = createCustomClient(tldInfo, rpcUrl)
     const bytecode = await client.getBytecode({ address: resolverAddr })

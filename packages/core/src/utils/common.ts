@@ -17,8 +17,18 @@ export function createCustomClient(tldInfo: TldInfo, rpcUrl?: string): PublicCli
         name: '',
         symbol: '',
       },
+      contracts: {
+        multicall3: {
+          address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+        },
+      },
     },
     transport: http(),
+    batch: {
+      multicall: {
+        wait: 10,
+      },
+    },
   })
 
   return client
