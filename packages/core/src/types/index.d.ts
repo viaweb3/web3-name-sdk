@@ -15,15 +15,8 @@ export type GetDomainNameProps = {
 
 export type BatchGetDomainNameProps = {
   addressList: Address[]
-  queryChainId?: number
-  queryTld?: string
+  queryChainIdList?: number[]
+  queryTldList?: string[]
   rpcUrl?: string
 }
 export type BatchGetReturn = { address: Address; domain: string | null }[]
-
-export type BatchGetAddressProps = {
-  nameList: string[]
-  queryChainId?: number
-  queryTld?: string
-  rpcUrl?: string
-}
