@@ -41,24 +41,54 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./seiName": {
-      "types": "./dist/seiName.d.ts",
-      "default": "./dist/seiName.js"
+      "import": {
+        "types": "./dist/seiName.d.ts",
+        "default": "./dist/seiName.js"
+      },
+      "require": {
+        "types": "./dist/seiName.d.cts",
+        "default": "./dist/seiName.cjs"
+      }
     },
     "./injName": {
-      "types": "./dist/injName.d.ts",
-      "default": "./dist/injName.js"
+      "import": {
+        "types": "./dist/injName.d.ts",
+        "default": "./dist/injName.js"
+      },
+      "require": {
+        "types": "./dist/injName.d.cts",
+        "default": "./dist/injName.cjs"
+      }
     },
     "./solName": {
-      "types": "./dist/solName.d.ts",
-      "default": "./dist/solName.js"
+      "import": {
+        "types": "./dist/solName.d.ts",
+        "default": "./dist/solName.js"
+      },
+      "require": {
+        "types": "./dist/solName.d.cts",
+        "default": "./dist/solName.cjs"
+      }
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "default": "./dist/utils/index.js"
+      "import": {
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.js"
+      },
+      "require": {
+        "types": "./dist/utils/index.d.cts",
+        "default": "./dist/utils/index.cjs"
+      }
     }
   },
   "directories": {
