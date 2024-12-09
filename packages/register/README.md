@@ -36,8 +36,8 @@ async function registerDomain(label: String) {
     const available = await register.getAvailable(label)
     // get price
     const price = await register.getRentPrice(label, 1)
-    // register for one year
-    await register.register(label, address, 1, {
+    // register for one year，return txHash
+    const txHash = await register.register(label, address, 1, {
       setPrimaryName: true, // set as primary name, default is false,
       referrer: 'test.bnb', // referrer domain, default is null
     })
@@ -69,8 +69,8 @@ async function registerDomain(label: String) {
     const available = await register.getAvailable(label)
     // get price
     const price = await register.getRentPrice(label, 1)
-    // register for one year
-    await register.register(label, address, 1, {
+    // register for one year，return txHash
+    const txHash = await register.register(label, address, 1, {
       setPrimaryName: true, // set as primary name, default is false,
       referrer: 'test.bnb', // referrer domain, default is null
     })
@@ -102,8 +102,8 @@ async function registerEthDomain(label: String) {
     const available = await register.getAvailable(label)
     // get price
     const price = await register.getRentPrice(label, 1)
-    // register for one year
-    await register.register(label, address, 1, {
+    // register for one year，return txHash
+    const txHash = await register.register(label, address, 1, {
       // wait for commit to be valid
       onCommitSuccess: (waitTime) => {
         return new Promise((resolve) => {
@@ -146,8 +146,8 @@ const normalizedLabel = validateNameV3('test123')
 const available = await register.getAvailable(normalizedLabel)
 // get price
 const price = await register.getRentPrice(normalizedLabel, 1)
-// register for one year and set as primary name
-await register.register(normalizedLabel, address[0], 1, {
+// register for one year and set as primary name, return txHash
+const txHash = await register.register(normalizedLabel, address[0], 1, {
   setPrimaryName: true
 })
 

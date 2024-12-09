@@ -38,7 +38,6 @@ export default class SIDRegisterV3 {
    * @param options.setPrimaryName optional parameter. register and set the domain as primary name.
    */
   async getRentPrice(label: string, year: number, options?: RegisterOptionsV3) {
-
     this.validateName(label)
 
     const extraData = encodeExtraData(options?.usePoint ?? false, options?.referrer)
@@ -48,7 +47,7 @@ export default class SIDRegisterV3 {
         abi: sidV3CtrlAbi,
         account: this.simulateAccount,
         functionName: 'bulkRegisterSimulate',
-        args: ([
+        args: [
           this.identifier,
           [label],
           this.resolverAddr,
@@ -56,7 +55,7 @@ export default class SIDRegisterV3 {
           this.resolverAddr,
           false,
           [extraData],
-        ] as any),
+        ] as any,
         value: this.simulateValue,
       })
     } catch (e: any) {
@@ -109,15 +108,7 @@ export default class SIDRegisterV3 {
     const data = encodeFunctionData({
       abi: sidV3CtrlAbi,
       functionName: 'bulkRegister',
-      args: [
-        this.identifier,
-        [normalizedName],
-        address,
-        duration,
-        this.resolverAddr,
-        setPrimaryName,
-        extraData,
-      ],
+      args: [this.identifier, [normalizedName], address, duration, this.resolverAddr, setPrimaryName, extraData],
     })
 
     let gasLimit = await this.publicClient.estimateGas({
@@ -138,6 +129,6 @@ export default class SIDRegisterV3 {
       chain: null,
     })
     await this.publicClient.waitForTransactionReceipt({ hash: txHash })
-    return normalizedName
+    return txHash
   }
 }

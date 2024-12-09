@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/register",
-  "version": "0.0.2-beta.2",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "type": "module",
