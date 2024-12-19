@@ -150,9 +150,10 @@ Create client and query domains:
 ```typescript
 import { createSolName } from '@web3-name-sdk/core/solName'
 
-const web3Name = createSolName()
+// recommended to provide a private Solana RPC, as the official one is prone to restrictions.
+const web3Name = createSolName({rpcUrl: 'http://....'})
 const domain = await web3Name.getDomainName({
-  address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
+  address: 'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
 }) // expect: bonfida
 ```
 
