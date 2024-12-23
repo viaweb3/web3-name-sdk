@@ -465,7 +465,7 @@ export class Web3Name {
         const tldInfoList = await this.contractReader.getTldInfo([tld])
         const publicClient = createPublicClient({
           chain: getChainFromId(Number(tldInfoList[0].chainId)),
-          transport: http(),
+          transport: http(rpcUrl),
         })
         return await publicClient.getEnsAddress({
           name: normalizedDomain,
