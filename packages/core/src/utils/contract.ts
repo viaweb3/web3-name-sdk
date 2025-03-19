@@ -28,7 +28,7 @@ export class ContractReader {
 
   constructor(isDev: boolean, rpcUrl?: string) {
     this.isDev = isDev
-    this.rpcUrl = rpcUrl ?? 'https://rpc.ankr.com/eth'
+    this.rpcUrl = rpcUrl ?? 'https://rpc.ankr.com/eth/01048c161385f5499bbe8f88cf68ce3d713c908be21217de37266424d49fefd7'
   }
 
   /** Get verified TLD hub contract */
