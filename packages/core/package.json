@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.3.2-patch.1",
+  "version": "0.3.2-beta.3",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -13,7 +13,8 @@
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test2": "ts-mocha -p tsconfig.json tests/**/sid.spec.ts",
     "test3": "ts-mocha -p tsconfig.json tests/**/sidV3.spec.ts",
-    "testBatch": "ts-mocha -p tsconfig.json tests/**/batch.spec.ts"
+    "testBatch": "ts-mocha -p tsconfig.json tests/**/batch.spec.ts",
+    "testTimeout": "ts-mocha -p tsconfig.json tests/**/timeout.spec.ts"
   },
   "author": "SPACE ID",
   "license": "MIT",

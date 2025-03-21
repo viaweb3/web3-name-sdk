@@ -1,8 +1,13 @@
-import { Address, PublicClient, createPublicClient, http } from 'viem'
-import { TldInfo } from '../types/tldInfo'
+import { http, createPublicClient, PublicClient, Address } from 'viem'
 import { mainnet, goerli, sepolia } from 'viem/chains'
+import { TldInfo } from '../types/tldInfo'
 
-export function createCustomClient(tldInfo: TldInfo, rpcUrl?: string): PublicClient {
+export function createCustomClient(
+  tldInfo: TldInfo,
+  rpcUrl?: string,
+  timeout?: number,
+  signal?: AbortSignal
+): PublicClient {
   const client = createPublicClient({
     chain: {
       id: Number(tldInfo.chainId),
@@ -23,7 +28,10 @@ export function createCustomClient(tldInfo: TldInfo, rpcUrl?: string): PublicCli
         },
       },
     },
-    transport: http(),
+    transport: http(rpcUrl || tldInfo.defaultRpc, {
+      timeout: timeout,
+      fetchOptions: { signal },
+    }),
     batch: {
       multicall: {
         wait: 10,

@@ -12,7 +12,7 @@ Developers can resolve web3 domain name or reverse resolve address with web3 nam
 
 If you are using `next.js`, please add the following configuration in your `next.config.js` in order to transpile commonjs dependencies:
 
-``` typescript
+```typescript
 const nextConfig = {
   transpilePackages: ['@web3-name-sdk/core'],
 }
@@ -22,7 +22,7 @@ const nextConfig = {
 
 #### 1. Setup client
 
-``` typescript
+```typescript
 import { createWeb3Name } from '@web3-name-sdk/core'
 
 const web3Name = createWeb3Name()
@@ -32,7 +32,7 @@ const web3Name = createWeb3Name()
 
 You can get address from domain name with a single request:
 
-``` typescript
+```typescript
 const address = await web3name.getAddress('spaceid.bnb')
 // expect: '0xb5932a6b7d50a966aec6c74c97385412fb497540'
 
@@ -50,9 +50,9 @@ const address = await web3name.getAddress('registry.gno')
 
 Domain resolution for other chains can be provided by adding `coinType` param to `getAddress()`.
 
-``` typescript
+```typescript
 import { convertEVMChainIdToCoinType } from '@ensdomains/address-encoder'
-const address = await web3name.getAddress('gnome.gno', {coinType: convertEVMChainIdToCoinType(1)})
+const address = await web3name.getAddress('gnome.gno', { coinType: convertEVMChainIdToCoinType(1) })
 // expect: 0x4348d45967552d0176d465170b7375ed22dc627b
 ```
 
@@ -62,7 +62,7 @@ There are optional parameters in the method to select your target chain or TLD (
 
 By providing chain IDs, you can resolve addresses on selected chains and get an available domain name from all TLDs deployed on these chains.
 
-``` typescript
+```typescript
 // Resolve an address from Gnosis Chiado
 const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
@@ -73,7 +73,7 @@ const name = await web3name.getDomainName({
 
 By providing TLDs, address can be resolved from the selected TLDs and get an available TLD primary name.
 
-``` typescript
+```typescript
 // Resolve an address from .gno TLD
 const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
@@ -86,7 +86,7 @@ const name = await web3name.getDomainName({
 
 You need to provide your target chain client and then provide optional parameters in the method. The method returns an list containing the address and its corresponding domain.
 
-``` typescript
+```typescript
 const res = await web3Name.batchGetDomainNameByTld({
   addressList: ['0x2886d6792503e04b19640c1f1430d23219af177f', '0xb5932a6b7d50a966aec6c74c97385412fb497540'],
   queryTld: 'bnb',
@@ -104,7 +104,7 @@ const res = await web3Name.batchGetDomainNameByChainId({
 
 Domain text records can be fetched by providing domain name and the key. For example, the avatar record of `spaceid.bnb` is returned from this method given key name `avatar`:
 
-``` typescript
+```typescript
 const record = await sid.getDomainRecord({ name: 'spaceid.bnb', key: 'avatar' })
 ```
 
@@ -112,7 +112,7 @@ const record = await sid.getDomainRecord({ name: 'spaceid.bnb', key: 'avatar' })
 
 Domain metadata can be fetched by SDK directly.
 
-``` typescript
+```typescript
 // requesting
 const metadata = await web3Name.getMetadata({ name: 'public.gno' })
 ```
@@ -125,7 +125,7 @@ As an all-in-one domain name SDK, non-EVM web3 domain name services are also inc
 
 Install additional corresponding dependencies for Solana environment:
 
-``` bash
+```bash
 npm install @solana/web3 @bonfida/spl-name-service
 ```
 
@@ -144,13 +144,13 @@ const domain = await web3Name.getDomainName({
 
 Install additional corresponding dependencies for Sei environment:
 
-``` bash
+```bash
 npm install @sei-js/core @siddomains/sei-sidjs
 ```
 
 Create client and query domains:
 
-``` typescript
+```typescript
 import { createSeiName } from '@web3-name-sdk/core/seiName'
 
 const web3Name = createSeiName()
@@ -163,13 +163,13 @@ const domain = await web3Name.getDomainName({
 
 Install additional corresponding dependencies for Injective environment:
 
-``` bash
+```bash
 npm install @siddomains/injective-sidjs '@injectivelabs/networks' '@injectivelabs/ts-types'
 ```
 
 Create client and query domains:
 
-``` typescript
+```typescript
 import { createInjName } from '@web3-name-sdk/core/injName'
 
 const web3Name = createInjName()
@@ -201,3 +201,48 @@ const address = await web3name.getMetaData('registry.arb', {
 })
 // expect: '0x8d27d6235d9d8EFc9Eef0505e745dB67D5cD2918'
 ```
+
+### Request Timeout Control
+
+The SDK provides timeout control for all network requests. You can set timeouts in two ways:
+
+#### 1. Global Timeout
+
+Set a global timeout when creating the client:
+
+```typescript
+// Set a 5-second timeout for all requests
+const web3Name = createWeb3Name({ timeout: 5000 })
+const solName = createSolName({ timeout: 5000 })
+const seiName = createSeiName({ timeout: 5000 })
+const injName = createInjName({ timeout: 5000 })
+```
+
+#### 2. Per-Request Timeout
+
+Override the global timeout for specific requests:
+
+```typescript
+// Set a 10-second timeout for this specific request
+const address = await web3name.getAddress('vitalik.eth', { timeout: 10000 })
+
+// Timeout can be combined with other options
+const address = await web3name.getAddress('registry.arb', {
+  rpcUrl: 'https://arb1.arbitrum.io/rpc',
+  timeout: 5000,
+})
+
+// Works with all methods
+const name = await web3name.getDomainName({
+  address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
+  queryChainIdList: [10200],
+  timeout: 5000,
+})
+
+const metadata = await web3name.getMetadata({
+  name: 'spaceid.bnb',
+  timeout: 5000,
+})
+```
+
+If a request exceeds the timeout duration, it will throw an error with a message indicating the timeout. The timeout applies to all network operations, including name resolution, reverse lookups, and metadata fetches.
