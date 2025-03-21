@@ -1,5 +1,5 @@
 // @ts-ignore
-import InjectiveID from '@siddomains/injective-sidjs'
+import { InjectiveID } from '@siddomains/injective-sidjs'
 // @ts-ignore
 import { getInjectiveIDAddress } from '@siddomains/injective-sidjs'
 import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
