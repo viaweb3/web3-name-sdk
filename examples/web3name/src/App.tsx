@@ -32,14 +32,6 @@ const TEST_CASES: Record<string, TestCase> = {
     protocol: 'EVM',
     description: 'Testing EVM name resolution with timeout parameter',
   },
-  evmSlow: {
-    title: 'EVM Slow RPC Test',
-    domainName: 'vitalik.eth',
-    address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
-    protocol: 'EVM',
-    description: 'Testing EVM with a slow RPC to verify timeout',
-    rpcUrl: 'https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7',
-  },
   evmFake: {
     title: 'EVM Fake RPC Test',
     domainName: 'vitalik.eth',
@@ -48,24 +40,59 @@ const TEST_CASES: Record<string, TestCase> = {
     description: 'Testing EVM with a non-existent RPC to test timeout',
     rpcUrl: 'https://fake-rpc-endpoint.example.com',
   },
+  arb: {
+    title: 'Arbitrum Test',
+    domainName: 'registry.arb',
+    address: '0x8d27d6235d9d8EFc9Eef0505e745dB67D5cD2918',
+    protocol: 'EVM',
+    description: 'Testing Arbitrum name resolution',
+  },
+  bnb: {
+    title: 'BNB Chain Test',
+    domainName: 'spaceid.bnb',
+    address: '0xb5932a6b7d50a966aec6c74c97385412fb497540',
+    protocol: 'EVM',
+    description: 'Testing BNB Chain name resolution',
+  },
+  zeta: {
+    title: 'ZETA Chain Test',
+    domainName: 'allen.zeta',
+    address: '0x84A6B518D592d6e4b8f1C00bc69F97439564f90B',
+    protocol: 'EVM',
+    description: 'Testing ZETA Chain name resolution',
+  },
+  lens: {
+    title: 'Lens Protocol Test',
+    domainName: 'bts_official.lens',
+    address: '0xd80EFA68b50D21E548B9Cdb092eBc6e5BcA113E7',
+    protocol: 'EVM',
+    description: 'Testing Lens Protocol name resolution',
+  },
+  crypto: {
+    title: 'Unstoppable Domains Test',
+    domainName: 'beresnev.crypto',
+    address: '0x6ec0deed30605bcd19342f3c30201db263291589',
+    protocol: 'EVM',
+    description: 'Testing Unstoppable Domains name resolution',
+  },
   solana: {
     title: 'Solana Test',
     domainName: 'bonfida.sol',
-    address: '9qvG1zUp8xF1Bi4m6UdRNby1BAAuaDrUxSpv4CmRRMjL',
+    address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
     protocol: 'Solana',
     description: 'Testing Solana name resolution with timeout parameter',
   },
   sei: {
     title: 'Sei Test',
     domainName: 'allen.sei',
-    address: 'sei1g9gf07p3v33j4dn988d99nwnf3pxpxj8xvvq6d',
+    address: 'sei1tmew60aj394kdfff0t54lfaelu3p8j8lz93pmf',
     protocol: 'Sei',
     description: 'Testing Sei name resolution with timeout parameter',
   },
   injective: {
     title: 'Injective Test',
     domainName: 'allen.inj',
-    address: 'inj1g9gf07p3v33j4dn988d99nwnf3pxpxj8n4c5v2',
+    address: 'inj1xw0d9lcjjnqq4v3lqk8ek9r0cxwpr4s8dxy44h',
     protocol: 'Injective',
     description: 'Testing Injective name resolution with timeout parameter',
   },
@@ -176,11 +203,7 @@ function App() {
   return (
     <div className="dark-theme-container">
       <div className="header">
-        <h1>Web3Name SDK Timeout Testing</h1>
-        <p className="description">
-          Testing timeout functionality for EVM, Solana, Sei, and Injective protocols. Each protocol supports timeout
-          both during initialization and method calls.
-        </p>
+        <h1>Web3Name SDK Testing</h1>
       </div>
 
       {/* Protocol selection */}

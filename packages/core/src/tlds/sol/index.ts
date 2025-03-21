@@ -10,9 +10,12 @@ export class SolName {
   constructor({ rpcUrl, timeout }: { rpcUrl?: string; timeout?: number }) {
     this.rpcUrl = rpcUrl
     this.timeout = timeout
-    this.connection = new Connection(this.rpcUrl || clusterApiUrl('mainnet-beta'), {
-      commitment: 'confirmed',
-    })
+    ;(this.connection = new Connection(
+      this.rpcUrl || 'https://mainnet.helius-rpc.com/?api-key=beb45bba-fbb6-4e37-a66c-31915a2c5109'
+    )),
+      {
+        commitment: 'confirmed',
+      }
   }
 
   private async withTimeout<T>(operation: () => Promise<T>, timeoutMs?: number): Promise<T> {
