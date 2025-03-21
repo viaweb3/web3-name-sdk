@@ -21,7 +21,7 @@ export class UDResolver {
     const proxyReaderContract = getContract({
       address: this.proxyReaderAddress,
       abi: proxyReaderAbi,
-      publicClient: client,
+      client: client,
     })
 
     const keys = ['crypto.ETH.address']
@@ -43,7 +43,7 @@ export class UDResolver {
     const registryContract = getContract({
       address: this.unsRegistryAddress,
       abi: unsRegistryAbi,
-      publicClient: client,
+      client: client,
     })
 
     const res = await registryContract.read.reverseNameOf([address as Address])

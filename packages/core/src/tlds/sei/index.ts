@@ -6,7 +6,7 @@ export class SeiName {
       const client = await getCosmWasmClient('https://sei-rpc.polkachu.com/')
       // @ts-ignore
       const seiSid = await import('@siddomains/sei-sidjs')
-      const SeiID = seiSid.default.default
+      const SeiID = seiSid.default
       const getSeiIDAddress = seiSid.getSeiIDAddress
       const seiId = new SeiID({ client, chainId: 'pacific-1', seiIdAddress: getSeiIDAddress('pacific-1') })
       const name = await seiId.getName(address)
@@ -21,8 +21,8 @@ export class SeiName {
     try {
       const client = await getCosmWasmClient('https://sei-rpc.polkachu.com/')
       // @ts-ignore
-      const seiSid = await import('@siddomains/sei-sidjs')
-      const SeiID = seiSid.default.default
+      const seiSid = await import('@siddomains/sei-sidjs');
+      const SeiID = seiSid.default
       const getSeiIDAddress = seiSid.getSeiIDAddress
       const seiId = new SeiID({ client, chainId: 'pacific-1', seiIdAddress: getSeiIDAddress('pacific-1') })
       const address = await seiId.name(name).getAddress()
