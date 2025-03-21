@@ -4,7 +4,6 @@ import InjectiveID from '@siddomains/injective-sidjs'
 import { getInjectiveIDAddress } from '@siddomains/injective-sidjs'
 import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
 import { ChainId } from '@injectivelabs/ts-types'
-import { ChainGrpcWasmApi } from '@injectivelabs/sdk-ts'
 
 export class InjName {
   private timeout?: number
