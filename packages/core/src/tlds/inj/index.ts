@@ -1,16 +1,14 @@
 // @ts-ignore
-import { InjectiveID } from '@siddomains/injective-sidjs'
-// @ts-ignore
 import { getInjectiveIDAddress } from '@siddomains/injective-sidjs'
 import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
 import { ChainId } from '@injectivelabs/ts-types'
-
 export class InjName {
   private timeout?: number
 
   constructor({ timeout }: { timeout?: number } = {}) {
     this.timeout = timeout
   }
+
 
   private async withTimeout<T>(operation: () => Promise<T>, timeoutMs?: number): Promise<T> {
     const effectiveTimeout = timeoutMs !== undefined ? timeoutMs : this.timeout
@@ -40,6 +38,9 @@ export class InjName {
     return this.withTimeout(async () => {
       try {
         const endpoints = getNetworkEndpoints(Network.Mainnet)
+        // @ts-ignore
+        const siddomains = await import('@siddomains/injective-sidjs')
+        const InjectiveID = siddomains.default
         const injectiveId = new InjectiveID({
           grpc: endpoints.grpc,
           chainId: ChainId.Mainnet,
@@ -59,6 +60,9 @@ export class InjName {
     return this.withTimeout(async () => {
       try {
         const endpoints = getNetworkEndpoints(Network.Mainnet)
+        // @ts-ignore
+        const siddomains = await import('@siddomains/injective-sidjs')
+        const InjectiveID = siddomains.default
         const injectiveId = new InjectiveID({
           grpc: endpoints.grpc,
           chainId: ChainId.Mainnet,
