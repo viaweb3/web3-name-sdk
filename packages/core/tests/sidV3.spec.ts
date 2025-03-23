@@ -38,4 +38,12 @@ describe('SID V3 Name resolving', () => {
     })
     expect(domain).to.be.eq('testtest.inj')
   }).timeout(10000)
+
+  it('it should properly resolve domain using Inj Name', async () => {
+    const web3Name = createInjName()
+    const address = await web3Name.getAddress({
+      name: 'testtest.inj',
+    })
+    expect(address).to.be.eq('inj10zvhv2a2mam8w7lhy96zgg2v8d800xcs7hf2tf')
+  }).timeout(10000)
 })

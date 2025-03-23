@@ -8,7 +8,7 @@ Developers can resolve web3 domain name or reverse resolve address with web3 nam
 
 ### Install
 
-`npm install @web3-name-sdk/core viem@^2.15.1`
+`npm install @web3-name-sdk/core viem@^2.23.12`
 
 If you are using `next.js`, please add the following configuration in your `next.config.js` in order to transpile commonjs dependencies:
 
@@ -194,6 +194,19 @@ const domain = await web3Name.getDomainName({
   address: 'inj10zvhv2a2mam8w7lhy96zgg2v8d800xcs7hf2tf',
 }) // expect: testtest.inj
 ```
+
+#### Note: Next.js Configuration for INJ and SEI Name Services
+
+When using INJ or SEI name services with Next.js, you'll need additional webpack configuration to handle dynamic imports and polyfills. Due to the complexity of these dependencies, extra configuration is required.
+
+Required dependencies:
+
+```bash
+npm install crypto-browserify stream-browserify buffer babel-loader @babel/preset-env @babel/plugin-transform-private-methods @babel/plugin-transform-private-property-in-object @babel/plugin-transform-runtime
+```
+
+View the complete Next.js configuration example:
+[next.config.example.js](https://github.com/Space-ID/web3-name-sdk/blob/main/next.config.example.js)
 
 ### Use your own RPC
 
