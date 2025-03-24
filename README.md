@@ -8,7 +8,7 @@ Developers can resolve web3 domain name or reverse resolve address with web3 nam
 
 ### Install
 
-`npm install @web3-name-sdk/core viem`
+`npm install @web3-name-sdk/core viem@^2.23.12`
 
 If you are using `next.js`, please add the following configuration in your `next.config.js` in order to transpile commonjs dependencies:
 
@@ -126,7 +126,7 @@ As an all-in-one domain name SDK, non-EVM web3 domain name services are also inc
 Install additional corresponding dependencies for Solana environment:
 
 ```bash
-npm install @solana/web3 @bonfida/spl-name-service
+npm install @solana/web3 @bonfida/spl-name-service@^3.0.10
 ```
 
 Create client and query domains:
@@ -134,9 +134,10 @@ Create client and query domains:
 ```typescript
 import { createSolName } from '@web3-name-sdk/core/solName'
 
-const web3Name = createSolName()
+// recommended to provide a private Solana RPC, as the official one is prone to restrictions.
+const web3Name = createSolName({ rpcUrl: 'http://....' })
 const domain = await web3Name.getDomainName({
-  address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
+  address: 'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
 }) // expect: bonfida
 ```
 
@@ -145,7 +146,7 @@ const domain = await web3Name.getDomainName({
 Install additional corresponding dependencies for Sei environment:
 
 ```bash
-npm install @sei-js/core @siddomains/sei-sidjs
+npm install @sei-js/core@^3.1.0 @siddomains/sei-sidjs@^0.0.4
 ```
 
 Create client and query domains:
@@ -164,7 +165,7 @@ const domain = await web3Name.getDomainName({
 Install additional corresponding dependencies for Injective environment:
 
 ```bash
-npm install @siddomains/injective-sidjs '@injectivelabs/networks' '@injectivelabs/ts-types'
+npm install @siddomains/injective-sidjs@0.0.2-beta @injectivelabs/networks @injectivelabs/ts-types
 ```
 
 Create client and query domains:
@@ -176,6 +177,50 @@ const web3Name = createInjName()
 const domain = await web3Name.getDomainName({
   address: 'inj10zvhv2a2mam8w7lhy96zgg2v8d800xcs7hf2tf',
 }) // expect: testtest.inj
+```
+
+#### Note: Next.js Configuration for INJ and SEI Name Services
+
+When using INJ or SEI name services with Next.js, you'll need additional webpack configuration to handle dynamic imports and polyfills. Due to the complexity of these dependencies, extra configuration is required.
+
+Required dependencies:
+
+```bash
+npm install crypto-browserify stream-browserify buffer babel-loader @babel/preset-env @babel/plugin-transform-private-methods @babel/plugin-transform-private-property-in-object @babel/plugin-transform-runtime
+```
+
+View the complete Next.js configuration example:
+[next.config.example.js](https://github.com/Space-ID/web3-name-sdk/blob/main/next.config.example.js)
+
+### PaymentID Domains Support
+
+Web3 Name SDK also supports PaymentID domains (using @tld format). These domains are resolved through the Gravity blockchain.
+
+```typescript
+const address = await web3name.getAddress('jerry@binance')
+const ethereumAddress = await web3name.getAddress('jerry@binance', { chainId: 1 })
+// Returns the Ethereum address (chain ID 1) associated with the PaymentID domain
+```
+
+#### Chain ID Table for PaymentID Resolution
+
+When resolving PaymentID domains, you can specify a chainId parameter to get addresses for specific blockchains:
+
+| Type    | ID  |
+| ------- | --- |
+| Bitcoin | 0   |
+| Evm     | 1   |
+| Solana  | 2   |
+| Tron    | 3   |
+| Aptos   | 4   |
+| Sui     | 5   |
+
+```typescript
+// Example: Get Bitcoin address from PaymentID domain
+const bitcoinAddress = await web3name.getAddress('username@paymentid', { chainId: 0 })
+
+// Example: Get Solana address from PaymentID domain
+const solanaAddress = await web3name.getAddress('username@paymentid', { chainId: 2 })
 ```
 
 ### Use your own RPC

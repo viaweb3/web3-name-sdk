@@ -25,7 +25,7 @@ const nextConfig = {
 ```typescript
 import { createWeb3Name } from '@web3-name-sdk/core'
 
-const web3name = createWeb3Name()
+const web3Name = createWeb3Name()
 ```
 
 #### 2. Resolve a domain name
@@ -63,20 +63,12 @@ There are optional parameters in the method to select your target chain or TLD (
 By providing chain IDs, you can resolve addresses on selected chains and get an available domain name from all TLDs deployed on these chains.
 
 ```typescript
-// Resolve an address from Gnosis
+// Resolve an address from Gnosis Chiado
 const name = await web3name.getDomainName({
-  address: '0xfceec24912535a47c0cba436977537ad225a2562',
-  queryChainIdList: [100],
+  address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
+  queryChainIdList: [10200],
 })
-// expect: genome.gno
-```
-
-```typescript
-// Batch resolve address from Gnosis
-const names = await web3name.batchGetDomainName({
-  addressList: ['0x2886D6792503e04b19640C1f1430d23219AF177F', '0xfceec24912535a47c0cba436977537ad225a2562'],
-  queryChainIdList: [100],
-})
+// expect: lydia.gno
 ```
 
 By providing TLDs, address can be resolved from the selected TLDs and get an available TLD primary name.
@@ -87,15 +79,7 @@ const name = await web3name.getDomainName({
   address: '0x2886D6792503e04b19640C1f1430d23219AF177F',
   queryTldList: ['gno'],
 })
-// expect: gnosischains.gno
-```
-
-```typescript
-// Batch resolve address from .gno TLD
-const names = await web3name.batchGetDomainName({
-  addressList: ['0x2886D6792503e04b19640C1f1430d23219AF177F', '0xfceec24912535a47c0cba436977537ad225a2562'],
-  queryChainIdList: ['gno'],
-})
+// expect: genome.gno
 ```
 
 #### 4. Batch resolve addresses
@@ -121,7 +105,7 @@ const res = await web3Name.batchGetDomainNameByChainId({
 Domain text records can be fetched by providing domain name and the key. For example, the avatar record of `spaceid.bnb` is returned from this method given key name `avatar`:
 
 ```typescript
-const record = await web3name.getDomainRecord({ name: 'spaceid.bnb', key: 'avatar' })
+const record = await sid.getDomainRecord({ name: 'spaceid.bnb', key: 'avatar' })
 ```
 
 #### 6. Metadata
@@ -142,7 +126,7 @@ As an all-in-one domain name SDK, non-EVM web3 domain name services are also inc
 Install additional corresponding dependencies for Solana environment:
 
 ```bash
-npm install @solana/web3 @bonfida/spl-name-service
+npm install @solana/web3 @bonfida/spl-name-service@^3.0.10
 ```
 
 Create client and query domains:
@@ -162,7 +146,7 @@ const domain = await web3Name.getDomainName({
 Install additional corresponding dependencies for Sei environment:
 
 ```bash
-npm install @sei-js/core @siddomains/sei-sidjs
+npm install @sei-js/core@^3.1.0 @siddomains/sei-sidjs@^0.0.4
 ```
 
 Create client and query domains:
@@ -181,7 +165,7 @@ const domain = await web3Name.getDomainName({
 Install additional corresponding dependencies for Injective environment:
 
 ```bash
-npm install @siddomains/injective-sidjs '@injectivelabs/networks' '@injectivelabs/ts-types'
+npm install @siddomains/injective-sidjs@0.0.2-beta @injectivelabs/networks @injectivelabs/ts-types
 ```
 
 Create client and query domains:
@@ -208,6 +192,37 @@ npm install crypto-browserify stream-browserify buffer babel-loader @babel/prese
 View the complete Next.js configuration example:
 [next.config.example.js](https://github.com/Space-ID/web3-name-sdk/blob/main/next.config.example.js)
 
+### PaymentID Domains Support
+
+Web3 Name SDK also supports PaymentID domains (using @tld format). These domains are resolved through the Gravity blockchain.
+
+```typescript
+const address = await web3name.getAddress('jerry@binance')
+const ethereumAddress = await web3name.getAddress('jerry@binance', { chainId: 1 })
+// Returns the Ethereum address (chain ID 1) associated with the PaymentID domain
+```
+
+#### Chain ID Table for PaymentID Resolution
+
+When resolving PaymentID domains, you can specify a chainId parameter to get addresses for specific blockchains:
+
+| Type    | ID  |
+| ------- | --- |
+| Bitcoin | 0   |
+| Evm     | 1   |
+| Solana  | 2   |
+| Tron    | 3   |
+| Aptos   | 4   |
+| Sui     | 5   |
+
+```typescript
+// Example: Get Bitcoin address from PaymentID domain
+const bitcoinAddress = await web3name.getAddress('username@paymentid', { chainId: 0 })
+
+// Example: Get Solana address from PaymentID domain
+const solanaAddress = await web3name.getAddress('username@paymentid', { chainId: 2 })
+```
+
 ### Use your own RPC
 
 We are using popular public RPC services by default to make it easier to use. But in some cases developers may prefer to use arbitrary RPC, so we provide optional parameter `rpcUrl` for each function that allows developers to use their own RPC to make requests.
@@ -215,8 +230,6 @@ We are using popular public RPC services by default to make it easier to use. Bu
 For example, you can put custom rpcUrl as a parameter in `getAddress` function.
 
 ```typescript
-const web3name = createWeb3Name({ rpcUrl: 'eth mainnet rpc url' })
-
 // Use custom RPC url (https://arb1.arbitrum.io/rpc)
 const address = await web3name.getAddress('registry.arb', {
   rpcUrl: 'https://arb1.arbitrum.io/rpc',

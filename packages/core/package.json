@@ -1,6 +1,6 @@
 {
   "name": "@web3-name-sdk/core",
-  "version": "0.3.5-beta.6",
+  "version": "0.3.5-beta.11",
   "description": "One stop Web3 domain name resolution",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -29,7 +29,7 @@
     "tsup": "^7.1.0"
   },
   "peerDependencies": {
-    "@bonfida/spl-name-service": "^2.5.1",
+    "@bonfida/spl-name-service": "^3.0.10",
     "@sei-js/core": "^3.1.0",
     "@siddomains/injective-sidjs": "0.0.2-beta",
     "@siddomains/sei-sidjs": "^0.0.4",
@@ -120,8 +120,14 @@
       "src/paymentIdName.ts",
       "src/utils/index.ts"
     ],
-    "splitting": false,
-    "target": "es2020"
+    "splitting": true,
+    "format": [
+      "esm",
+      "cjs"
+    ],
+    "dts": true,
+    "target": "es2020",
+    "clean": true
   },
   "sideEffects": false,
   "keywords": [

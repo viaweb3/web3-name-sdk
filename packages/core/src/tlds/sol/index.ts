@@ -1,6 +1,6 @@
-import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js'
+import { Connection, PublicKey } from '@solana/web3.js'
 
-import { resolve, reverseLookup } from '@bonfida/spl-name-service'
+import { resolve, getPrimaryDomain } from '@bonfida/spl-name-service'
 
 export class SolName {
   private rpcUrl?: string
@@ -44,15 +44,23 @@ export class SolName {
 
   async getDomainName({ address, timeout }: { address: string; timeout?: number }) {
     return this.withTimeout(async () => {
-      const name = await reverseLookup(this.connection, new PublicKey(address))
-      return name
+      try {
+        const name = await getPrimaryDomain(this.connection, new PublicKey(address))
+        return name.reverse + '.sol'
+      } catch (error) {
+        return null
+      }
     }, timeout)
   }
 
   async getAddress({ name, timeout }: { name: string; timeout?: number }) {
     return this.withTimeout(async () => {
-      const owner = await resolve(this.connection, name)
-      return owner.toBase58()
+      try {
+        const owner = await resolve(this.connection, name)
+        return owner.toBase58()
+      } catch (error) {
+        return null
+      }
     }, timeout)
   }
 }

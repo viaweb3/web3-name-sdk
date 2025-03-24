@@ -10,9 +10,17 @@ describe('SID V3 Name resolving', () => {
   it('it should properly resolve address using SNS', async () => {
     const web3Name = createSolName()
     const domain = await web3Name.getDomainName({
-      address: 'Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb',
+      address: 'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
     })
-    expect(domain).to.be.eq('bonfida')
+    expect(domain).to.be.eq('bonfida.sol')
+  }).timeout(10000)
+
+  it('it should properly resolve domain using SNS', async () => {
+    const web3Name = createSolName()
+    const address = await web3Name.getAddress({
+      name: 'bonfida.sol',
+    })
+    expect(address).to.be.eq('HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA')
   }).timeout(10000)
 
   it('it should properly resolve address using Sei Name', async () => {
