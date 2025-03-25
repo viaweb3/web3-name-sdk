@@ -186,7 +186,7 @@ When using INJ or SEI name services with Next.js, you'll need additional webpack
 Required dependencies:
 
 ```bash
-npm install crypto-browserify stream-browserify buffer babel-loader @babel/preset-env @babel/plugin-transform-private-methods @babel/plugin-transform-private-property-in-object @babel/plugin-transform-runtime
+npm install --save-dev buffer crypto-browserify https-browserify stream-browserify stream-http process babel-loader @babel/plugin-transform-runtime @babel/preset-env
 ```
 
 View the complete Next.js configuration example:
@@ -249,7 +249,7 @@ const address = await web3name.getMetaData('registry.arb', {
 
 ### Request Timeout Control
 
-The SDK provides timeout control for all network requests. You can set timeouts in two ways:
+The SDK provides timeout control for most network requests. You can set timeouts in two ways:
 
 #### 1. Global Timeout
 
@@ -290,4 +290,4 @@ const metadata = await web3name.getMetadata({
 })
 ```
 
-If a request exceeds the timeout duration, it will throw an error with a message indicating the timeout. The timeout applies to all network operations, including name resolution, reverse lookups, and metadata fetches.
+If a request exceeds the timeout duration, it will throw an error with a message indicating the timeout. The timeout applies to most network operations, including name resolution, reverse lookups, and metadata fetches. But requests of paymentid domains currently do not support timeout configuration.

@@ -3,35 +3,43 @@ const webpack = require('webpack')
 
 const nextConfig = {
   webpack: (config, { isServer }) => {
-    // Resolve aliases for SID packages
     config.resolve.alias = {
       ...config.resolve.alias,
       '@siddomains/injective-sidjs': require.resolve('@siddomains/injective-sidjs'),
       '@siddomains/sei-sidjs': require.resolve('@siddomains/sei-sidjs'),
     }
 
-    // Add fallbacks for Node.js core modules
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
+      net: false,
+      tls: false,
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
       crypto: require.resolve('crypto-browserify'),
       stream: require.resolve('stream-browserify'),
       buffer: require.resolve('buffer/'),
+      path: false,
+      zlib: false,
+      querystring: false,
+      os: false,
+      url: false,
     }
 
-    // Add required plugins
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        axios: require.resolve('axios'),
+      }
+    }
+
     config.plugins.push(
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
-      }),
-      new webpack.DefinePlugin({
-        'import.meta.webpackHot': JSON.stringify({}),
-        'import.meta.url': JSON.stringify(''),
-        'import.meta': JSON.stringify({}),
+        process: 'process/browser',
       })
     )
 
-    // Handle module resolution for .mjs files
     config.module.rules.push({
       test: /\.m?js$/,
       type: 'javascript/auto',
@@ -40,24 +48,15 @@ const nextConfig = {
       },
     })
 
-    // Configure Babel for SID and Injective packages
     config.module.rules.push({
       test: /\.m?js$/,
       include: /node_modules\/(@injectivelabs|@siddomains|@web3-name-sdk)/,
-      resolve: {
-        fullySpecified: false,
-      },
       use: {
         loader: require.resolve('babel-loader'),
         options: {
           presets: [['@babel/preset-env', { targets: { browsers: 'last 2 versions' } }]],
-          plugins: [
-            '@babel/plugin-transform-private-methods',
-            '@babel/plugin-transform-private-property-in-object',
-            ['@babel/plugin-transform-runtime', { regenerator: true }],
-          ],
+          plugins: ['@babel/plugin-transform-runtime'],
           sourceType: 'unambiguous',
-          compact: false,
           cacheDirectory: true,
         },
       },
@@ -70,13 +69,7 @@ const nextConfig = {
     return config
   },
   reactStrictMode: true,
-  transpilePackages: [
-    '@siddomains/injective-sidjs',
-    '@injectivelabs/sdk-ts',
-    '@injectivelabs/networks',
-    '@injectivelabs/ts-types',
-    '@web3-name-sdk/core',
-  ],
+  transpilePackages: ['@siddomains/injective-sidjs', '@injectivelabs/sdk-ts', '@web3-name-sdk/core'],
 }
 
 module.exports = nextConfig
