@@ -23,6 +23,9 @@ import { CONTRACTS } from '../constants/contracts'
 import { TldInfo } from '../types/tldInfo'
 import { createCustomClient, getBaseContractFromChainId } from './common'
 
+const DEFAULT_RPC_URL = 'https://ethereum-rpc.publicnode.com'
+const RPC_API_URL = 'https://spaceapi.prd.space.id/rpc/1'
+
 export class ContractReader {
   private isDev: boolean
   private rpcUrl?: string
@@ -30,7 +33,7 @@ export class ContractReader {
 
   constructor(isDev: boolean, rpcUrl?: string, timeout?: number) {
     this.isDev = isDev
-    this.rpcUrl = rpcUrl || 'https://rpc.ankr.com/eth/01048c161385f5499bbe8f88cf68ce3d713c908be21217de37266424d49fefd7'
+    this.rpcUrl = rpcUrl || DEFAULT_RPC_URL
     if (!rpcUrl) {
       this.initRpcUrl().then((url) => {
         this.rpcUrl = url
@@ -42,17 +45,26 @@ export class ContractReader {
 
   private async initRpcUrl(): Promise<string> {
     try {
-      const response = await fetch('https://spaceapi.prd.space.id/rpc/1')
+      const response = await fetch(RPC_API_URL)
       const data = await response.json()
-      return data.url ?? 'https://rpc.ankr.com/eth/01048c161385f5499bbe8f88cf68ce3d713c908be21217de37266424d49fefd7'
+      return data.url ?? DEFAULT_RPC_URL
     } catch (error) {
       console.error('Error fetching RPC URL:', error)
-      return 'https://rpc.ankr.com/eth/01048c161385f5499bbe8f88cf68ce3d713c908be21217de37266424d49fefd7'
+      return DEFAULT_RPC_URL
     }
   }
 
   getTimeout() {
     return this.timeout
+  }
+
+  /**
+   * Get current RPC URL
+   * If user didn't provide one, it may be dynamically fetched from API
+   * @returns Current RPC URL
+   */
+  getRpcUrl(): string {
+    return this.rpcUrl || DEFAULT_RPC_URL
   }
 
   async withTimeout<T>(operation: (signal: AbortSignal) => Promise<T>, timeoutMs?: number): Promise<T> {

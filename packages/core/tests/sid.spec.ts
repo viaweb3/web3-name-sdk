@@ -121,4 +121,30 @@ describe('SID Name resolving', () => {
 
     expect(domainName).to.be.not.null
   }).timeout(10000)
+
+  it('it should properly resolve ENS address with custom RPC', async () => {
+    const sid = createWeb3Name()
+
+    const domainName = await sid.getAddress('olddomain.eth', {
+      rpcUrl: 'https://ethereum-rpc.publicnode.com',
+    })
+
+    expect(domainName).to.be.eq('0xd03D02A3490218123Da4b4994538Af9EA2Ee5D05')
+  }).timeout(10000)
+
+  it('it should properly resolve ENS address without custom RPC (use dynamic RPC URL)', async () => {
+    const sid = createWeb3Name()
+
+    const domainName = await sid.getAddress('olddomain.eth')
+
+    expect(domainName).to.be.eq('0xd03D02A3490218123Da4b4994538Af9EA2Ee5D05')
+  }).timeout(10000)
+
+  it('it should properly use constructor rpcUrl for ENS', async () => {
+    const sid = createWeb3Name({ rpcUrl: 'https://ethereum-rpc.publicnode.com' })
+
+    const domainName = await sid.getAddress('olddomain.eth')
+
+    expect(domainName).to.be.eq('0xd03D02A3490218123Da4b4994538Af9EA2Ee5D05')
+  }).timeout(10000)
 })

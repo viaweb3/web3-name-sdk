@@ -515,20 +515,13 @@ export class Web3Name {
 
       try {
         if (tld === TLD.ENS) {
-          const data = await fetch('https://spaceapi.prd.space.id/rpc/1')
-          const rpcUrlConfig = await data.json()
           const tldInfoList = await this.contractReader.getTldInfo([tld])
           const publicClient = createPublicClient({
             chain: getChainFromId(Number(tldInfoList[0].chainId)),
-            transport: http(
-              rpcUrl ||
-                'https://rpc.ankr.com/eth/01048c161385f5499bbe8f88cf68ce3d713c908be21217de37266424d49fefd7' ||
-                rpcUrlConfig.url,
-              {
-                timeout: timeout,
-                fetchOptions: { signal },
-              }
-            ),
+            transport: http(rpcUrl || this.contractReader.getRpcUrl(), {
+              timeout: timeout,
+              fetchOptions: { signal },
+            }),
           })
           return await publicClient.getEnsAddress({
             name: normalizedDomain,
