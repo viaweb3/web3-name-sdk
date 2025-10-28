@@ -37,7 +37,6 @@ export class ContractReader {
     if (!rpcUrl) {
       this.initRpcUrl().then((url) => {
         this.rpcUrl = url
-        console.log('Updated RPC URL:', this.rpcUrl)
       })
     }
     this.timeout = timeout
